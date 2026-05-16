@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+body {
+  font-family: "Arial", sans-serif;
+  color: #fff;
+  background-color: black;
+  overflow-x: hidden;
+}
+
+@theme {
+  --color-primary: #b8956a;
+  --color-secondary: #4a9b9b;
+  --color-star: #ffb800;
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+html {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #b9925f #0a0a0a; /* thumb track */
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b9925f;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d1aa73;
+}
+
+h3 {
+  font-size: 30px;
+}
