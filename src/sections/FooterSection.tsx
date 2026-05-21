@@ -6,9 +6,9 @@ const FooterSection = () => {
       className="h-fit bg-linear-to-b from-[#141414] to-[#0a0a0a] flex flex-col items-start justify-center "
       id="footer"
     >
-      <div className="flex gap-4 py-10">
-        <div className="flex-1 flex items-start justify-start flex-col gap-6">
-          <div className="flex gap-6 items-center justify-center w-full">
+      <div className="flex md:flex-col lg:flex-row gap-4 items-start justify-evenly py-10 w-full h-full">
+        <div className="w-fit flex items-start justify-start flex-col gap-6 h-full ">
+          <div className="flex gap-6 items-center justify-center w-fit ">
             <img
               src="/sanctum.png"
               alt="sanctum logo footer"
@@ -21,13 +21,13 @@ const FooterSection = () => {
             alt="sanctum logo footer"
             className="max-w-12"
           /> */}
-          <p className="px-10">
+          <p className="w-80">
             Din partner för optimal hälsa. Professionell kiropraktik och
             personlig vård i Stockholm.
           </p>
-          <p className="px-10">Org.nr: 559580-7321</p>
+          <p>Org.nr: 559580-7321</p>
         </div>
-        <div className="flex-1 flex items-center justify-center flex-col gap-6">
+        <div className="w-fit flex items-center justify-start flex-col gap-6">
           <h3>Följ oss</h3>
           <div className="flex gap-6">
             <SocialMediaBtn
@@ -39,16 +39,26 @@ const FooterSection = () => {
               href="https://www.tiktok.com/@sanctum_kiropraktik"
             />
           </div>
-          <p className="px-10">
+          {/*    <p className="px-10">
             Tips, rörelse, återhämtning och satisfying kiropraktiska justeringar
             — följ oss för mer.
-          </p>
+          </p> */}
         </div>
-        <div className="flex-1 flex items-center justify-center flex-col gap-6">
+        <div className="w-fit flex items-center justify-start flex-col gap-6">
           <h3>Länkar</h3>
-          <a href="#services">Behandlingar</a>
-          <a href="#reviews">Omdömen</a>
-          <a href="/privacypolicy">Privacypolicy</a>
+          <div className="flex flex-col items-start justify-center gap-4">
+            <a href="#services">Behandlingar</a>
+            <a href="#reviews">Omdömen</a>
+            <a href="/privacypolicy">Integritetspolicy</a>
+          </div>
+        </div>
+        <div className="w-fit flex items-center justify-start flex-col gap-6">
+          <h3>Öppettider</h3>
+          <div className="flex flex-col items-start justify-center gap-4">
+            <p>Måndag - Onsdag: Stängt</p>
+            <p>Torsdag - Fredag: 16:00 - 21:00</p>
+            <p>Lördag -Söndag: 12:00 - 17:00</p>
+          </div>
         </div>
         <div className="w-fit flex items-center justify-center flex-col gap-6">
           <h3>Kontakt</h3>

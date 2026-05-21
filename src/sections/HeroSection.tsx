@@ -38,7 +38,7 @@ const HeroSection = () => {
         className="max-h-full w-full object-cover flex opacity-70"
       /> */}
       <div className="absolute top-1/2 -translate-y-1/2  w-full grid grid-cols-2">
-        <div className="flex flex-col gap-8 pl-40">
+        <div className="flex flex-col gap-8 pl-40 items-start justify-center">
           <h1 className="font-bold text-5xl">
             Från smärta till funktion – Rehabilitering och träning i Solna
           </h1>
@@ -71,7 +71,7 @@ const HeroSection = () => {
           <img
             src="/sanctum_round_logo.png"
             alt="Sanctum logo"
-            className="w-[50%] h-auto"
+            className="w-auto h-[50%]"
           />
         </div>
       </div>

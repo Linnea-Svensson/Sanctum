@@ -15,7 +15,7 @@ export const Review = ({
     name.split(" ")[0].split("")[0] + name.split(" ")[1].split("")[0]; */
   return (
     /*  <div className="bg-black rounded-xl flex flex-col p-6 items-start justify-between relative"> */
-    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/10 relative">
+    <div className="bg-white/5 rounded-2xl p-6 shadow-sm border border-white/10 relative">
       <div className="flex gap-2">
         {Array.from({ length: rating }, (_, i) => (
           <Star key={i} className="fill-star text-star w-4 h-4" />
