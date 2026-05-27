@@ -13,6 +13,7 @@ import { Route as VcardRouteImport } from './routes/vcard'
 import { Route as PrivacypolicyRouteImport } from './routes/privacypolicy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PQ7kf9m2dxzRouteImport } from './routes/p.q7kf9m2dxz'
 
 const VcardRoute = VcardRouteImport.update({
   id: '/vcard',
@@ -34,18 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PQ7kf9m2dxzRoute = PQ7kf9m2dxzRouteImport.update({
+  id: '/p/q7kf9m2dxz',
+  path: '/p/q7kf9m2dxz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
   '/vcard': typeof VcardRoute
+  '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
   '/vcard': typeof VcardRoute
+  '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,20 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
   '/vcard': typeof VcardRoute
+  '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/privacypolicy' | '/vcard'
+  fullPaths: '/' | '/about' | '/privacypolicy' | '/vcard' | '/p/q7kf9m2dxz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/privacypolicy' | '/vcard'
-  id: '__root__' | '/' | '/about' | '/privacypolicy' | '/vcard'
+  to: '/' | '/about' | '/privacypolicy' | '/vcard' | '/p/q7kf9m2dxz'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/privacypolicy'
+    | '/vcard'
+    | '/p/q7kf9m2dxz'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +82,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   PrivacypolicyRoute: typeof PrivacypolicyRoute
   VcardRoute: typeof VcardRoute
+  PQ7kf9m2dxzRoute: typeof PQ7kf9m2dxzRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/q7kf9m2dxz': {
+      id: '/p/q7kf9m2dxz'
+      path: '/p/q7kf9m2dxz'
+      fullPath: '/p/q7kf9m2dxz'
+      preLoaderRoute: typeof PQ7kf9m2dxzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +130,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   PrivacypolicyRoute: PrivacypolicyRoute,
   VcardRoute: VcardRoute,
+  PQ7kf9m2dxzRoute: PQ7kf9m2dxzRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
