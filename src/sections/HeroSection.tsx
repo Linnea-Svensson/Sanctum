@@ -32,11 +32,11 @@ const HeroSection = () => {
         <div className="absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-[100px]"></div>
         <div className="absolute bottom-20 left-10 w-80 h-80 bg-secondary/20 rounded-full blur-3xl"></div>
       </div>
-      {/*   <img
-        src="/hero.avif"
+      <img
+        src="/photos/hero.jpg"
         alt=""
-        className="max-h-full w-full object-cover flex opacity-70"
-      /> */}
+        className="max-h-full w-full object-cover flex opacity-30"
+      />
       <div className="absolute top-1/2 -translate-y-1/2  w-full grid grid-cols-2">
         <div className="flex flex-col gap-8 pl-40 items-start justify-center">
           <h1 className="font-bold text-5xl">
@@ -68,11 +68,11 @@ const HeroSection = () => {
           </div>
         </div>
         <div className="w-full h-full flex items-center justify-center">
-          <img
+          {/*    <img
             src="/sanctum_round_logo.png"
             alt="Sanctum logo"
             className="w-auto h-[50%]"
-          />
+          /> */}
         </div>
       </div>
     </section>

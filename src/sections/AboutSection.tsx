@@ -35,9 +35,9 @@ const AboutSection = () => {
     <section id="about" className="grid lg:grid-cols-2 py-10">
       <div className="items-center justify-center flex flex-col gap-6 h-full relative">
         <img
-          src="/kendi.jpg"
+          src="/photos/kendi.jpg"
           alt="Sanctum Logo"
-          className="max-w-[35%] h-auto rounded-3xl shadow-sm border border-white/10"
+          className="max-w-[50%] h-auto rounded-3xl shadow-sm border border-white/10"
         />
         <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/10 absolute bottom-0">
           <TrustIndicator
