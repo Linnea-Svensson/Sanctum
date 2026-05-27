@@ -41,7 +41,7 @@ const ServicesSection = () => {
       className="h-fit flex items-center justify-center scroll-m-16"
       id="services"
     >
-      <div className="w-3/4 flex flex-col h-full py-10 items-center justify-start">
+      <div className="w-full px-6 lg:w-3/4 md:px-6 flex flex-col h-full py-10 items-center justify-start">
         <SectionHeader title="Våra" boldPart="behandlingar" />
         <p>
           Individanpassade behandlingar för din unika situation och mål. Vi

@@ -1,7 +1,15 @@
-const NavItem = ({ name, link }: { name: string; link: string }) => {
+const NavItem = ({
+  name,
+  link,
+  onClick,
+}: {
+  name: string;
+  link: string;
+  onClick?: () => void;
+}) => {
   return (
     <li>
-      <a href={link} className="hover:text-primary">
+      <a href={link} onClick={onClick} className="hover:text-primary">
         {name}
       </a>
     </li>

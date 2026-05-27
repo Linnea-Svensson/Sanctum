@@ -6,9 +6,9 @@ const ContactSection = () => {
   return (
     <section id="contact" className="bg-black pt-6 w-full scroll-m-16">
       <SectionHeader title="Kontakta" boldPart="oss" />
-      <div className="grid lg:grid-cols-2 px-14 pb-6 gap-6 h-full w-full">
+      <div className="grid lg:grid-cols-2 px-6 md:px-14 pb-6 gap-6 h-full w-full">
         <div>
-          <div className="overflow-hidden h-full rounded-3xl border shadow-lg">
+          <div className="overflow-hidden h-72 lg:h-full rounded-3xl border shadow-lg">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2028.0368693872076!2d18.08356387802895!3d59.4491364746725!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x465f9ba4aae3ea11%3A0x96c15685ac02946f!2sKemistv%C3%A4gen%2010%2C%20183%2079%20T%C3%A4by!5e0!3m2!1ssv!2sse!4v1778176008724!5m2!1ssv!2sse"
               width="100%"
@@ -73,7 +73,7 @@ const ContactSection = () => {
                 >
                   {getIcon("clock", "text-secondary h-7 w-7")}
                 </div>
-                <div className="flex flex-col justify-center gap-1 w-2/5">
+                <div className="flex flex-col justify-center gap-1 w-full max-w-xs">
                   <p className="font-bold mb-2">Öppettider</p>
                   <div className="flex items-center justify-between w-full">
                     <p>Måndag - Onsdag</p>

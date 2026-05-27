@@ -10,7 +10,7 @@ export const links = {
 
 function App() {
   return (
-    <div className="bg-black h-screen w-screen flex items-start justify-center">
+    <div className="bg-black min-h-screen w-full flex items-start justify-center overflow-x-hidden">
       <Start />
     </div>
   );

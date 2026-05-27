@@ -68,7 +68,7 @@ const ReviewsSection = () => {
           </a>
         </div>
       </div>
-      <div className="w-3/4 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="w-full px-6 lg:w-3/4 md:px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reviews.map((review, index) => (
           <Review
             key={index}

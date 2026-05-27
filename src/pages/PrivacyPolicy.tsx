@@ -1,7 +1,7 @@
 const PrivacyPolicy = () => {
   return (
     <div className="w-full flex items-center justify-center">
-      <div className="flex flex-col gap-4 w-1/2 items-start justify-center h-screen ">
+      <div className="flex flex-col gap-4 w-full max-w-2xl px-6 items-start justify-center min-h-screen py-16">
         <img
           src="sanctum_round_logo.png"
           alt="sanctum logo"
