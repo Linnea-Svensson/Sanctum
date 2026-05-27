@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VcardRouteImport } from './routes/vcard'
 import { Route as PrivacypolicyRouteImport } from './routes/privacypolicy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const VcardRoute = VcardRouteImport.update({
+  id: '/vcard',
+  path: '/vcard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacypolicyRoute = PrivacypolicyRouteImport.update({
   id: '/privacypolicy',
   path: '/privacypolicy',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
+  '/vcard': typeof VcardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
+  '/vcard': typeof VcardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
+  '/vcard': typeof VcardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/privacypolicy'
+  fullPaths: '/' | '/about' | '/privacypolicy' | '/vcard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/privacypolicy'
-  id: '__root__' | '/' | '/about' | '/privacypolicy'
+  to: '/' | '/about' | '/privacypolicy' | '/vcard'
+  id: '__root__' | '/' | '/about' | '/privacypolicy' | '/vcard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   PrivacypolicyRoute: typeof PrivacypolicyRoute
+  VcardRoute: typeof VcardRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vcard': {
+      id: '/vcard'
+      path: '/vcard'
+      fullPath: '/vcard'
+      preLoaderRoute: typeof VcardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacypolicy': {
       id: '/privacypolicy'
       path: '/privacypolicy'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   PrivacypolicyRoute: PrivacypolicyRoute,
+  VcardRoute: VcardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
