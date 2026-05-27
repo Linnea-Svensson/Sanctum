@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacypolicyRouteImport } from './routes/privacypolicy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PQ7kf9m2dxzRouteImport } from './routes/p.q7kf9m2dxz'
 
 const PrivacypolicyRoute = PrivacypolicyRouteImport.update({
   id: '/privacypolicy',
@@ -28,35 +29,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PQ7kf9m2dxzRoute = PQ7kf9m2dxzRouteImport.update({
+  id: '/p/q7kf9m2dxz',
+  path: '/p/q7kf9m2dxz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
+  '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
+  '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/privacypolicy': typeof PrivacypolicyRoute
+  '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/privacypolicy'
+  fullPaths: '/' | '/about' | '/privacypolicy' | '/p/q7kf9m2dxz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/privacypolicy'
-  id: '__root__' | '/' | '/about' | '/privacypolicy'
+  to: '/' | '/about' | '/privacypolicy' | '/p/q7kf9m2dxz'
+  id: '__root__' | '/' | '/about' | '/privacypolicy' | '/p/q7kf9m2dxz'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   PrivacypolicyRoute: typeof PrivacypolicyRoute
+  PQ7kf9m2dxzRoute: typeof PQ7kf9m2dxzRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/q7kf9m2dxz': {
+      id: '/p/q7kf9m2dxz'
+      path: '/p/q7kf9m2dxz'
+      fullPath: '/p/q7kf9m2dxz'
+      preLoaderRoute: typeof PQ7kf9m2dxzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   PrivacypolicyRoute: PrivacypolicyRoute,
+  PQ7kf9m2dxzRoute: PQ7kf9m2dxzRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
