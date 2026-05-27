@@ -1,11 +1,11 @@
 const PrivacyPolicy = () => {
   return (
     <div className="w-full flex items-center justify-center">
-      <div className="flex flex-col gap-4 w-full max-w-2xl px-6 items-start justify-center min-h-screen py-16">
+      <div className="flex flex-col gap-4 w-full max-w-2xl px-6 items-start justify-center min-h-screen">
         <img
-          src="sanctum_round_logo.png"
+          src="sanctum_kiropraktik_pt_massage.png"
           alt="sanctum logo"
-          className="h-auto w-80 mb-10 mx-auto"
+          className="h-auto w-90 mx-auto"
         />
         <p>
           Sanctum Kiropraktik & Hälsa värnar om din personliga integritet och
@@ -37,7 +37,7 @@ const PrivacyPolicy = () => {
         </p>
         <p>
           Har du frågor kring hur vi hanterar personuppgifter är du välkommen
-          att kontakta oss via [e-postadress] eller [telefonnummer].
+          att kontakta oss via info@sanctumkiropraktik.se eller 076-344 46 10.
         </p>
       </div>
     </div>
