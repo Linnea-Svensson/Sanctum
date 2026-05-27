@@ -86,7 +86,7 @@ const ActionButton = ({
   <a
     href={href}
     aria-label={label}
-    className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg hover:bg-white/90 transition"
+    className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg hover:bg-white/90 transition"
   >
     {children}
   </a>
@@ -111,7 +111,7 @@ const ContactRow = ({
     <div
       className={`flex items-center gap-4 py-5 ${last ? "" : "border-b border-neutral-500"}`}
     >
-      <div className="shrink-0 w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+      <div className="shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center">
         {icon}
       </div>
       <div className="min-w-0">
@@ -134,7 +134,7 @@ const ContactRow = ({
 const VCard = () => {
   return (
     <div className="min-h-screen w-full bg-black flex justify-center">
-      <div className="relative w-full max-w-md min-h-screen pb-28">
+      <div className="relative w-full min-h-screen pb-28">
         {/* Header */}
         <header className="bg-linear-to-b from-[#639b8f] via-[#34685f] to-95% to-black px-6 pt-14 pb-8 flex flex-col items-center text-center">
           <img
@@ -193,7 +193,7 @@ const VCard = () => {
               href={mapUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-block mt-2 px-4 py-1.5 rounded-full bg-primary text-sm font-medium text-neutral-700 hover:bg-neutral-200 transition"
+              className="inline-block mt-2 px-4 py-1.5 rounded-full bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-200 transition"
             >
               Visa på kartan
             </a>
@@ -236,13 +236,13 @@ const VCard = () => {
         </div>
 
         {/* Add contact bar */}
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md">
+        <div className="fixed bottom-0 bg-black left-0 rounded-lg overflow-hidden p-4 w-full">
           <button
             onClick={downloadVCard}
-            className="relative w-full flex items-center justify-center gap-3 bg-[#1f1f1f] text-white py-5 font-medium hover:bg-[#262626] transition"
+            className="relative w-full flex items-center justify-center gap-3 bg-primary text-black font-bold py-5 hover:bg-[#262626] transition rounded-lg"
           >
-            <UserPlus className="w-5 h-5 absolute left-6" />
-            Lägg till kontakt
+            <UserPlus className="w-6 h-6" />
+            <p>Lägg till kontakt</p>
           </button>
         </div>
       </div>
