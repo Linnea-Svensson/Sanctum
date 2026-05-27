@@ -1,4 +1,3 @@
-import { Navbar } from "../components/Navbar";
 import AboutSection from "../sections/AboutSection";
 import ContactSection from "../sections/ContactSection";
 import FooterSection from "../sections/FooterSection";
