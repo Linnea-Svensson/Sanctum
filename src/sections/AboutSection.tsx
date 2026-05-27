@@ -32,14 +32,17 @@ const trustIndicators: TrustIndicatorType[] = [
 
 const AboutSection = () => {
   return (
-    <section id="about" className="grid lg:grid-cols-2 gap-12 lg:gap-0 py-10 px-6 lg:px-0">
-      <div className="items-center justify-center flex flex-col gap-6 h-full relative">
+    <section
+      id="about"
+      className="grid lg:grid-cols-2 gap-12 lg:gap-0 pb-14 px-6 lg:px-0"
+    >
+      <div className="items-center justify-center flex flex-col gap-6 h-fit my-auto relative ">
         <img
-          src="/photos/kendi.jpg"
+          src="/kendi.jpg"
           alt="Sanctum Logo"
           className="max-w-[70%] sm:max-w-[55%] lg:max-w-[50%] h-auto rounded-3xl shadow-sm border border-white/10"
         />
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/10 absolute bottom-0">
+        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/10 absolute bottom-1">
           <TrustIndicator
             icon="award"
             title="Kendi Johansson"
@@ -49,11 +52,11 @@ const AboutSection = () => {
         </div>
       </div>
       <div className="flex flex-col px-0 md:px-12 lg:px-32 items-center">
-        {/*      <img
-          src="/sanctum_round_logo.png"
+        <img
+          src="/sanctum_kiropraktik_pt_massage.png"
           alt="Sanctum Logo"
-          className="max-w-80 h-auto"
-        /> */}
+          className="max-w-90 h-auto"
+        />
         <SectionHeader title="Välkommen till" boldPart="Sanctum" />
         <div className="flex flex-col gap-6 mb-6">
           <p>

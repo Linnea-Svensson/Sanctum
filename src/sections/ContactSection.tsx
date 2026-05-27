@@ -4,7 +4,10 @@ import { getIcon } from "../components/TrustIndicator";
 
 const ContactSection = () => {
   return (
-    <section id="contact" className="bg-black pt-6 w-full scroll-m-16">
+    <section
+      id="contact"
+      className="bg-black pt-6 w-full scroll-m-16 bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/contact.jpg')]"
+    >
       <SectionHeader title="Kontakta" boldPart="oss" />
       <div className="grid lg:grid-cols-2 px-6 md:px-14 pb-6 gap-6 h-full w-full">
         <div>
@@ -19,7 +22,7 @@ const ContactSection = () => {
         </div>
         <ContainerCard>
           <div className="flex flex-col gap-6">
-            <h3>Kontaktinformation</h3>
+            <h3 className="z-10">Kontaktinformation</h3>
             <div className="flex gap-6 border-b border-primary/30 pb-6">
               <div
                 className={
@@ -47,7 +50,7 @@ const ContactSection = () => {
                 </div>
                 <div className="flex flex-col justify-center gap-1">
                   <p className="font-bold">Telefon</p>
-                  <p>08-123 45 67</p>
+                  <p>076-344 46 10</p>
                 </div>
               </div>
               <div className="flex gap-6">
@@ -60,7 +63,7 @@ const ContactSection = () => {
                 </div>
                 <div className="flex flex-col justify-center gap-1">
                   <p className="font-bold">E-post</p>
-                  <p>info@sanctum.se</p>
+                  <p>info@sanctumkiropraktik.se</p>
                 </div>
               </div>
             </div>

@@ -72,11 +72,11 @@ const FooterSection = () => {
             </div>
             <div className="flex gap-4 items-center justify-start">
               {getIcon("phone", "text-primary")}
-              <p>08-123 45 67</p>
+              <p>076-344 46 10</p>
             </div>
             <div className="flex gap-4 items-center justify-start">
               {getIcon("mail", "text-primary")}
-              <p>info@sanctum.se</p>
+              <p>info@sanctumkiropraktik.se</p>
             </div>
           </div>
         </div>

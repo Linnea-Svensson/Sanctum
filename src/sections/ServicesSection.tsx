@@ -38,10 +38,15 @@ const services = [
 const ServicesSection = () => {
   return (
     <div
-      className="h-fit flex items-center justify-center scroll-m-16"
+      className="h-fit flex items-center justify-center scroll-m-16 relative"
       id="services"
     >
-      <div className="w-full px-6 lg:w-3/4 md:px-6 flex flex-col h-full py-10 items-center justify-start">
+      <img
+        src="/photos/6.jpg"
+        alt="lobby"
+        className="w-full h-full absolute top-0 left-0 object-cover opacity-30"
+      />
+      <div className="w-full px-6 lg:w-3/4 md:px-6 flex flex-col h-full py-10 items-center justify-start z-10">
         <SectionHeader title="Våra" boldPart="behandlingar" />
         <p>
           Individanpassade behandlingar för din unika situation och mål. Vi

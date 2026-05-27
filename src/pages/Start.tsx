@@ -9,7 +9,6 @@ import ServicesSection from "../sections/ServicesSection";
 const Start = () => {
   return (
     <div className="w-full ">
-      <Navbar />
       <HeroSection />
       <AboutSection />
       <ServicesSection />
