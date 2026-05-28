@@ -40,9 +40,9 @@ const AboutSection = () => {
         <img
           src="/kendi.jpg"
           alt="Sanctum Logo"
-          className="max-w-[70%] sm:max-w-[55%] lg:max-w-[50%] h-auto rounded-3xl shadow-sm border border-white/10"
+          className="max-w-[70%] lg:mt-10 mt-20 sm:max-w-[55%] lg:max-w-[50%] h-auto rounded-3xl shadow-sm border border-white/10"
         />
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-sm border border-white/10 absolute bottom-1">
+        <div className="bg-black/50 rounded-2xl p-6 shadow-sm border border-white/10 absolute bottom-1">
           <TrustIndicator
             icon="award"
             title="Kendi Johansson"

@@ -7,7 +7,7 @@ const FooterSection = () => {
       id="footer"
     >
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-4 items-center lg:items-start justify-evenly py-10 px-6 w-full h-full">
-        <div className="w-fit flex items-start justify-start flex-col gap-6 h-full ">
+        <div className="w-fit flex items-center justify-center flex-col gap-6 h-full ">
           <div className="flex gap-6 items-center justify-center w-fit ">
             <img
               src="/sanctum.png"
@@ -21,7 +21,7 @@ const FooterSection = () => {
             alt="sanctum logo footer"
             className="max-w-12"
           /> */}
-          <p className="max-w-[18rem]">
+          <p className="max-w-[18rem] text-center">
             Din partner för optimal hälsa. Professionell kiropraktik och
             personlig vård i Stockholm.
           </p>

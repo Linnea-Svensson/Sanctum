@@ -9,9 +9,11 @@ export const Navbar = () => {
   const close = () => setOpen(false);
   const location = window.location.pathname;
 
+  /* backdrop-blur-sm */
+
   return (
     !location.includes("/p/q7kf9m2dxz") && (
-      <nav className="border-b z-50 bg-white/10 backdrop-blur-sm border-primary px-6 md:px-20 py-4 md:py-6 sticky top-0 left-0">
+      <nav className="border-b z-50 bg-black/50 border-primary px-6 md:px-20 py-4 md:py-6 sticky top-0 left-0">
         <div className="flex items-center justify-between">
           <a href="/" onClick={close}>
             <img src="/sanctum.png" alt="Sanctum Logo" className="h-7 w-auto" />
