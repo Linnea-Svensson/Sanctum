@@ -6,7 +6,7 @@ const FooterSection = () => {
       className="h-fit bg-linear-to-b from-[#141414] to-[#0a0a0a] flex flex-col items-start justify-center "
       id="footer"
     >
-      <div className="flex flex-col lg:flex-row gap-10 lg:gap-4 items-center lg:items-start justify-evenly py-10 px-6 w-full h-full">
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-4 items-center lg:items-start justify-evenly py-10 px-6 w-full h-full max-w-[2500px] mx-auto">
         <div className="w-fit flex items-center justify-center flex-col gap-6 h-full ">
           <div className="flex gap-6 items-center justify-center w-fit ">
             <img

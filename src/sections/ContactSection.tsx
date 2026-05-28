@@ -9,7 +9,7 @@ const ContactSection = () => {
       className="bg-black pt-6 w-full scroll-m-16 bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/outside.jpg')]"
     >
       <SectionHeader title="Kontakta" boldPart="oss" />
-      <div className="grid lg:grid-cols-2 px-6 md:px-14 pb-6 gap-6 h-full w-full">
+      <div className="grid lg:grid-cols-2 px-6 md:px-14 pb-6 gap-6 h-full w-full max-w-[2050px] mx-auto">
         <div>
           <div className="overflow-hidden h-72 lg:h-full rounded-3xl border shadow-lg">
             <iframe

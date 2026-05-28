@@ -28,13 +28,13 @@ const HeroSection = () => {
       className="w-full py-6 overflow-hidden bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/1.jpg')]"
       id="hero"
     >
-      <div className="absolute inset-0 overflow-hidden">
+      {/*    <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-[100px]"></div>
         <div className="absolute bottom-20 left-10 w-80 h-80 bg-secondary/20 rounded-full blur-3xl"></div>
-      </div>
+      </div> */}
 
-      <div className="relative grid lg:grid-cols-2 items-center px-6 md:px-12 lg:pl-40 py-20 lg:py-0 lg:min-h-[70vh]">
-        <div className="flex flex-col gap-6 md:gap-8 items-start justify-center">
+      <div className="relative grid lg:grid-cols-2 items-center px-6 md:px-12 lg:pl-40 py-20 lg:py-0 lg:min-h-[70vh] max-w-[2500px] mx-auto">
+        <div className="flex flex-col gap-6 md:gap-8 items-start justify-center ">
           <h1 className="font-bold text-3xl sm:text-4xl lg:text-5xl">
             Från behandlingsbänk till träningsbänk - Kiropraktik &
             idrottsmassage i Täby

@@ -45,11 +45,11 @@ const reviews = [
 const ReviewsSection = () => {
   return (
     <section
-      className="h-fit bg-linear-to-b from-[#141414] to-[#0a0a0a] flex items-center justify-center py-6 flex-col scroll-m-16"
+      className="h-fit bg-linear-to-b from-[#141414] to-[#0a0a0a] flex items-center justify-center py-6 flex-col scroll-m-16 "
       id="reviews"
     >
       <SectionHeader title="Vad säger" boldPart="våra klienter?" />
-      <div className="flex gap-6 mb-8">
+      <div className="flex gap-6 mb-8 ">
         <div className="flex flex-col gap-1 items-center justify-center">
           <div
             role="img"
@@ -87,7 +87,7 @@ const ReviewsSection = () => {
           </a>
         </div>
       </div>
-      <ul className="w-full px-6 lg:w-3/4 md:px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6 grid-rows-1 list-none p-0">
+      <ul className="w-full px-6 lg:w-3/4 md:px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6 grid-rows-1 list-none p-0 max-w-[2000px] mx-auto">
         {reviews.map((review, index) => (
           <li key={index}>
             <Review

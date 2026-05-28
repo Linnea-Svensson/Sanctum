@@ -34,7 +34,7 @@ const AboutSection = () => {
   return (
     <section
       id="about"
-      className="grid lg:grid-cols-2 gap-12 lg:gap-0 pb-14 px-6 lg:px-0"
+      className="grid lg:grid-cols-2 gap-12 lg:gap-0 pb-14 px-6 lg:px-0  max-w-[2000px] mx-auto"
     >
       <div className="items-center justify-center flex flex-col gap-6 h-fit my-auto relative ">
         <img
