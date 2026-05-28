@@ -2,7 +2,7 @@ import { getIcon, type IconType } from "../components/TrustIndicator";
 
 const FooterSection = () => {
   return (
-    <section
+    <footer
       className="h-fit bg-linear-to-b from-[#141414] to-[#0a0a0a] flex flex-col items-start justify-center "
       id="footer"
     >
@@ -11,7 +11,7 @@ const FooterSection = () => {
           <div className="flex gap-6 items-center justify-center w-fit ">
             <img
               src="/sanctum.png"
-              alt="sanctum logo footer"
+              alt="Sanctum Kiropraktik & Hälsa"
               className="max-w-48"
             />
             {/*  <h3 className="text-2xl">Sanctum</h3> */}
@@ -32,10 +32,12 @@ const FooterSection = () => {
           <div className="flex gap-6">
             <SocialMediaBtn
               icon="instagram"
+              label="Sanctum på Instagram (öppnas i nytt fönster)"
               href="https://www.instagram.com/sanctum_kiropraktik/"
             />
             <SocialMediaBtn
               icon="tiktok"
+              label="Sanctum på TikTok (öppnas i nytt fönster)"
               href="https://www.tiktok.com/@sanctum_kiropraktik"
             />
           </div>
@@ -62,7 +64,7 @@ const FooterSection = () => {
         </div>
         <div className="w-fit flex items-center justify-center flex-col gap-6">
           <h3>Kontakt</h3>
-          <div className="flex flex-col gap-2">
+          <address className="not-italic flex flex-col gap-2">
             <div className="flex gap-4 items-center justify-start">
               {getIcon("location", "text-primary")}
               <div className="flex flex-col">
@@ -72,13 +74,15 @@ const FooterSection = () => {
             </div>
             <div className="flex gap-4 items-center justify-start">
               {getIcon("phone", "text-primary")}
-              <p>076-344 46 10</p>
+              <a href="tel:+46763444610">076-344 46 10</a>
             </div>
             <div className="flex gap-4 items-center justify-start">
               {getIcon("mail", "text-primary")}
-              <p>info@sanctumkiropraktik.se</p>
+              <a href="mailto:info@sanctumkiropraktik.se">
+                info@sanctumkiropraktik.se
+              </a>
             </div>
-          </div>
+          </address>
         </div>
       </div>
       <div className="border-t w-full border-white/40 py-4 flex items-center justify-center">
@@ -86,15 +90,25 @@ const FooterSection = () => {
           © 2026 Sanctum Kiropraktik & Hälsa. Alla rättigheter förbehållna.
         </p>
       </div>
-    </section>
+    </footer>
   );
 };
 
-const SocialMediaBtn = ({ icon, href }: { icon: IconType; href: string }) => {
+const SocialMediaBtn = ({
+  icon,
+  href,
+  label,
+}: {
+  icon: IconType;
+  href: string;
+  label: string;
+}) => {
   return (
     <a
       href={href}
       target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
       className="w-12 h-12 flex items-center justify-center bg-stone-800 rounded-lg hover:bg-stone-800/70"
     >
       {getIcon(icon)}

@@ -39,7 +39,7 @@ const AboutSection = () => {
       <div className="items-center justify-center flex flex-col gap-6 h-fit my-auto relative ">
         <img
           src="/kendi.jpg"
-          alt="Sanctum Logo"
+          alt="Kendi Johansson, legitimerad kiropraktor på Sanctum"
           className="max-w-[70%] lg:mt-10 mt-20 sm:max-w-[55%] lg:max-w-[50%] h-auto rounded-3xl shadow-sm border border-white/10"
         />
         <div className="bg-black/50 rounded-2xl p-6 shadow-sm border border-white/10 absolute bottom-1">
@@ -54,7 +54,8 @@ const AboutSection = () => {
       <div className="flex flex-col px-0 md:px-12 lg:px-32 items-center">
         <img
           src="/sanctum_kiropraktik_pt_massage.png"
-          alt="Sanctum Logo"
+          alt=""
+          aria-hidden="true"
           className="max-w-90 h-auto"
         />
         <SectionHeader title="Välkommen till" boldPart="Sanctum" />

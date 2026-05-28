@@ -51,34 +51,54 @@ const ReviewsSection = () => {
       <SectionHeader title="Vad säger" boldPart="våra klienter?" />
       <div className="flex gap-6 mb-8">
         <div className="flex flex-col gap-1 items-center justify-center">
-          <div className="flex gap-1">
+          <div
+            role="img"
+            aria-label="Genomsnittsbetyg 5 av 5 stjärnor"
+            className="flex gap-1"
+          >
             {Array.from({ length: 5 }, (_, i) => (
-              <Star className="text-star fill-star h-5 w-5" key={"star " + i} />
+              <Star
+                aria-hidden="true"
+                className="text-star fill-star h-5 w-5"
+                key={"star " + i}
+              />
             ))}
           </div>
-          <p className="text-3xl text-primary mt-1">5/5</p>
+          <p aria-hidden="true" className="text-3xl text-primary mt-1">
+            5/5
+          </p>
           <p className="leading-3 text-sm">Genomsnittbetyg</p>
         </div>
-        <div className="h-full min-h-18 min-w-[0.5px] bg-primary/50 my-auto"></div>
+        <div
+          aria-hidden="true"
+          className="h-full min-h-18 min-w-[0.5px] bg-primary/50 my-auto"
+        ></div>
         <div className="flex flex-col gap-1 items-center justify-center">
           <p className="text-3xl text-primary">300+</p>
           <p className="text-sm">Recensioner</p>
-          <a href={links.bokadirekt} className="text-secondary text-sm">
+          <a
+            href={links.bokadirekt}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Se alla recensioner på Bokadirekt (öppnas i nytt fönster)"
+            className="text-secondary text-sm"
+          >
             via Bokadirekt
           </a>
         </div>
       </div>
-      <div className="w-full px-6 lg:w-3/4 md:px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6 grid-rows-1">
+      <ul className="w-full px-6 lg:w-3/4 md:px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6 grid-rows-1 list-none p-0">
         {reviews.map((review, index) => (
-          <Review
-            key={index}
-            name={review.name}
-            rating={review.rating}
-            text={review.text}
-            treatment={review.treatment}
-          />
+          <li key={index}>
+            <Review
+              name={review.name}
+              rating={review.rating}
+              text={review.text}
+              treatment={review.treatment}
+            />
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 };

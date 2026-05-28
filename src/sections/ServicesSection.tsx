@@ -43,7 +43,8 @@ const ServicesSection = () => {
     >
       <img
         src="/photos/6.jpg"
-        alt="lobby"
+        alt=""
+        aria-hidden="true"
         className="w-full h-full absolute top-0 left-0 object-cover opacity-30"
       />
       <div className="w-full px-6 lg:w-3/4 md:px-6 flex flex-col h-full py-10 items-center justify-start z-10">

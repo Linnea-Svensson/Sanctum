@@ -46,45 +46,45 @@ export type IconType =
 export const getIcon = (type: IconType, color?: string) => {
   switch (type) {
     case "check":
-      return <Check className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Check aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "award":
-      return <Award className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Award aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "creditcard":
-      return <CreditCard className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <CreditCard aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "star":
       return <Star className={`w-5 h-5 ${color || "text-star fill-star"}`} />;
     case "activity":
-      return <Activity className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Activity aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "dumbbell":
-      return <Dumbbell className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Dumbbell aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "heart":
-      return <Heart className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Heart aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "sparkles":
-      return <Sparkles className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Sparkles aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "stethoscope":
-      return <Stethoscope className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Stethoscope aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "zap":
-      return <Zap className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Zap aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "baby":
-      return <Baby className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Baby aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "move":
-      return <Move className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Move aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "phone":
-      return <Phone className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Phone aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "mail":
-      return <Mail className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Mail aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "clock":
-      return <Clock className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Clock aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "location":
-      return <MapPin className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <MapPin aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "hand":
-      return <Hand className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <Hand aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "heartPlus":
-      return <HeartPlus className={`w-5 h-5 ${color || "text-secondary"}`} />;
+      return <HeartPlus aria-hidden="true" className={`w-5 h-5 ${color || "text-secondary"}`} />;
     case "instagram":
-      return <FaInstagram className={`w-7 h-7 ${color || "text-primary"}`} />;
+      return <FaInstagram aria-hidden="true" className={`w-7 h-7 ${color || "text-primary"}`} />;
     case "tiktok":
-      return <RiTiktokLine className={`w-7 h-7 ${color || "text-primary"}`} />;
+      return <RiTiktokLine aria-hidden="true" className={`w-7 h-7 ${color || "text-primary"}`} />;
     default:
       return null;
   }
