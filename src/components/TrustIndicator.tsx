@@ -103,7 +103,7 @@ const TrustIndicator = ({
 }) => {
   return (
     <div
-      className={`flex items-center gap-3 ${!text && "bg-white/5 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/10"}`}
+      className={`flex items-center gap-3 ${!text && "bg-black/50 rounded-xl px-4 py-3 border border-white/10"}`}
     >
       <div className={`${iconBg && "bg-secondary/30 p-2 rounded-lg"} `}>
         {getIcon(icon)}
