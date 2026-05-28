@@ -13,9 +13,13 @@ const Button = ({
     <a
       href={href}
       target={externalLink ? "_blank" : ""}
+      rel={externalLink ? "noopener noreferrer" : undefined}
       className={`${primary ? "bg-primary border-2 border-transparent hover:bg-primary/70" : "border-2 border-primary text-primary hover:bg-primary"}  py-3 px-8 rounded-full hover:text-white hover:border-transparent transition-all`}
     >
       {title}
+      {externalLink && (
+        <span className="sr-only"> (öppnas i nytt fönster)</span>
+      )}
     </a>
   );
 };

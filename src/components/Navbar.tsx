@@ -13,7 +13,10 @@ export const Navbar = () => {
 
   return (
     !location.includes("/p/q7kf9m2dxz") && (
-      <nav className="border-b z-50 bg-black/50 border-primary px-6 md:px-20 py-4 md:py-6 sticky top-0 left-0">
+      <nav
+        aria-label="Huvudmeny"
+        className="border-b z-50 bg-black/50 border-primary px-6 md:px-20 py-4 md:py-6 sticky top-0 left-0"
+      >
         <div className="flex items-center justify-between">
           <a href="/" onClick={close}>
             <img src="/sanctum.png" alt="Sanctum Logo" className="h-7 w-auto" />
@@ -36,15 +39,23 @@ export const Navbar = () => {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Stäng meny" : "Öppna meny"}
             aria-expanded={open}
+            aria-controls="mobile-menu"
             className="md:hidden p-2 -mr-2"
           >
-            {open ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            {open ? (
+              <X aria-hidden="true" className="w-7 h-7" />
+            ) : (
+              <Menu aria-hidden="true" className="w-7 h-7" />
+            )}
           </button>
         </div>
 
         {/* Mobile menu */}
         {open && (
-          <div className="md:hidden flex flex-col gap-5 pt-6 pb-2">
+          <div
+            id="mobile-menu"
+            className="md:hidden flex flex-col gap-5 pt-6 pb-2"
+          >
             <ul className="flex flex-col gap-5 text-lg">
               <NavItem name="Start" link="/" onClick={close} />
               <NavItem name="Behandlingar" link="#services" onClick={close} />
