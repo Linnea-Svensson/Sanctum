@@ -21,7 +21,7 @@ const contact = {
   websiteUrl: "https://www.sanctumkiropraktik.se",
   address: "Kemistvägen, 10, Stockholms län, 183 79, Sverige",
   company: "Sanctum Kiropraktik & Hälsa AB",
-  photo: "/kendi.jpg",
+  photo: "/photos/kendi.png",
 };
 
 const mapUrl =

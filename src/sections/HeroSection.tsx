@@ -25,7 +25,7 @@ const heroTrustIndicators = [
 const HeroSection = () => {
   return (
     <section
-      className="w-full py-6 overflow-hidden bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/1.jpg')]"
+      className="w-full py-6 overflow-hidden bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/1.png')]"
       id="hero"
     >
       {/*    <div className="absolute inset-0 overflow-hidden">
