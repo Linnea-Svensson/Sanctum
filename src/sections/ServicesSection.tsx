@@ -38,7 +38,7 @@ const services = [
 const ServicesSection = () => {
   return (
     <div
-      className="h-fit flex items-center justify-center scroll-m-16 relative bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/6.jpg')]"
+      className="h-fit flex items-center justify-center scroll-m-16 relative bg-cover bg-center bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('/photos/6.png')]"
       id="services"
     >
       <div className="w-full px-6 lg:w-3/4 md:px-6 flex flex-col h-full py-10 items-center justify-start z-10  max-w-[2000px] mx-auto">

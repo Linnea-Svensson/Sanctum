@@ -38,7 +38,7 @@ const AboutSection = () => {
     >
       <div className="items-center justify-center flex flex-col gap-6 h-fit my-auto relative ">
         <img
-          src="/kendi.jpg"
+          src="/photos/kendi.png"
           alt="Kendi Johansson, legitimerad kiropraktor på Sanctum"
           className="max-w-[70%] lg:mt-10 mt-20 sm:max-w-[55%] lg:max-w-[50%] h-auto rounded-3xl shadow-sm border border-white/10"
         />
