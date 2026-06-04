@@ -1,4 +1,5 @@
 import Start from "./pages/Start";
+import { Analytics } from "@vercel/analytics/react";
 
 export const primaryColor = "#b8956a";
 
@@ -10,9 +11,12 @@ export const links = {
 
 function App() {
   return (
-    <div className="bg-black min-h-screen w-full flex items-start justify-center overflow-x-hidden">
-      <Start />
-    </div>
+    <>
+      <div className="bg-black min-h-screen w-full flex items-start justify-center overflow-x-hidden">
+        <Start />
+      </div>
+      <Analytics />
+    </>
   );
 }
 
