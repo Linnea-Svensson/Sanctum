@@ -14,7 +14,7 @@ const contact = {
   name: "Kendi Johansson",
   title: "Leg. Kiropraktor | Massör | PT",
   bio: "Leg. kiropraktor med fokus på behandling, rörelse och hållbar träning. Jag hjälper dig från behandlingsbänk till träningsbänk.",
-  phoneLabel: "0763444610",
+  phoneLabel: "Telefonnummer",
   phone: "+46763444610",
   email: "info@sanctumkiropraktik.se",
   website: "www.sanctumkiropraktik.se",
@@ -30,11 +30,18 @@ const mapUrl =
 
 const social = [
   {
-    icon: <Globe className="w-6 h-6 text-neutral-900" />,
+    icon: (
+      <img src="/bokadirekt_logo.svg" alt="BokaDirekt" className="w-7 h-7" />
+    ),
     iconWrap: "bg-white",
-    label: "Web",
-    sub: "BokaDirekt",
+    label: "BokaDirekt",
     href: "https://www.bokadirekt.se/places/sanctum-kiropraktik-halsa-135763",
+  },
+  {
+    icon: <img src="/favicon.svg" alt="BokaDirekt" className="w-8 h-8" />,
+    iconWrap: "bg-black ring-1 ring-white/15",
+    label: "www.sanctumkiropraktik.se",
+    href: "https://www.sanctumkiropraktik.se",
   },
   {
     icon: <FaInstagram className="w-6 h-6 text-white" />,
