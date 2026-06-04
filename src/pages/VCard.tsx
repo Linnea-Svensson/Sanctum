@@ -234,7 +234,7 @@ const VCard = () => {
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-white">{s.label}</p>
-                  {s.sub && <p className="text-sm text-neutral-400">{s.sub}</p>}
+                  {/*       {s?.sub && <p className="text-sm text-neutral-400">{s?.sub}</p>} */}
                 </div>
                 <ChevronRight className="w-5 h-5 text-neutral-500" />
               </a>
