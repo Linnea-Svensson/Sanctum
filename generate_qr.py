@@ -6,11 +6,12 @@ from PIL import Image, ImageDraw
 """ if python is not found  """
 """ pip install qrcode[pil] pillow  """
 
-URL = "https://www.sanctumkiropraktik.se/p/q7kf9m2dxz"
+""" URL = "https://www.sanctumkiropraktik.se/p/q7kf9m2dxz" """
+URL = "https://www.bokadirekt.se/places/sanctum-kiropraktik-halsa-135763" 
 PRIMARY = "#b8956a"
 BACKGROUND = "#000000"
 LOGO_PATH = "public/sanctum_logo.png"
-OUTPUT_PATH = "public/sanctum_qr.png"
+OUTPUT_PATH = "public/bokadirekt_sanctum.png"
 
 box_size = 20
 border = 2
