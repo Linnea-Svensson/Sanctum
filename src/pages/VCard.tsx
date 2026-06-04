@@ -38,7 +38,7 @@ const social = [
     href: "https://www.bokadirekt.se/places/sanctum-kiropraktik-halsa-135763",
   },
   {
-    icon: <img src="/favicon.svg" alt="BokaDirekt" className="w-8 h-8" />,
+    icon: <img src="/favicon_v2.svg" alt="BokaDirekt" className="w-8 h-8" />,
     iconWrap: "bg-black ring-1 ring-white/15",
     label: "www.sanctumkiropraktik.se",
     href: "https://www.sanctumkiropraktik.se",
