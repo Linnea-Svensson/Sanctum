@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 
 /**
@@ -29,21 +29,227 @@ type ColorKey =
   | "title"
   | "message";
 
-const COLOR_FIELDS: { key: ColorKey; label: string; default: string }[] = [
-  { key: "primary", label: "Primär (QR & ram)", default: "#b8956a" },
-  { key: "background", label: "Bakgrund", default: "#000000" },
-  { key: "gradientLight", label: "Gradient ljus", default: "#b8956a" },
-  { key: "gradientDark", label: "Gradient mörk", default: "#8a6a45" },
-  { key: "title", label: "Titel & namn", default: "#f4ece0" },
-  { key: "message", label: "Meddelandetext", default: "#2c2014" },
-];
+const COLOR_DEFAULTS_KIRO: { [key in ColorKey]: string } = {
+  primary: "#b8956a",
+  background: "#000000",
+  gradientLight: "#b8956a",
+  gradientDark: "#8a6a45",
+  title: "#f4ece0",
+  message: "#2c2014",
+};
+
+const COLOR_DEFAULTS_IDROTTSMASSAGE: { [key in ColorKey]: string } = {
+  primary: "#27a18d",
+  background: "#000000",
+  gradientLight: "#27a18d",
+  gradientDark: "#053a31",
+  title: "#c7fff6",
+  message: "#001d18",
+};
+
+type ColorDefaultsTheme = "kiro" | "idrottsmassage";
+
+// Default service text shown on the poster for each theme.
+const THEME_MESSAGE: { [key in ColorDefaultsTheme]: string } = {
+  kiro: "Kiropraktisk behandling",
+  idrottsmassage: "Idrottsmassage",
+};
+
+const THEME_COLORS: { [key in ColorDefaultsTheme]: { [k in ColorKey]: string } } =
+  {
+    kiro: COLOR_DEFAULTS_KIRO,
+    idrottsmassage: COLOR_DEFAULTS_IDROTTSMASSAGE,
+  };
 
 type Colors = Record<ColorKey, string>;
 
-const DEFAULT_COLORS: Colors = COLOR_FIELDS.reduce((acc, f) => {
-  acc[f.key] = f.default;
-  return acc;
-}, {} as Colors);
+// --- Colour math (hex <-> HSV) for the gradient wheel ----------------------
+function hexToRgb(hex: string): [number, number, number] {
+  let h = hex.replace("#", "");
+  if (h.length === 3)
+    h = h
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  const n = parseInt(h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  return (
+    "#" +
+    [r, g, b]
+      .map((v) =>
+        Math.round(Math.max(0, Math.min(255, v)))
+          .toString(16)
+          .padStart(2, "0"),
+      )
+      .join("")
+  );
+}
+
+function rgbToHsv(r: number, g: number, b: number) {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d) {
+    if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return { h, s: max === 0 ? 0 : d / max, v: max };
+}
+
+function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
+  const c = v * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = v - c;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  if (h < 60) [r, g] = [c, x];
+  else if (h < 120) [r, g] = [x, c];
+  else if (h < 180) [g, b] = [c, x];
+  else if (h < 240) [g, b] = [x, c];
+  else if (h < 300) [r, b] = [x, c];
+  else [r, b] = [c, x];
+  return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
+}
+
+/**
+ * Gradient colour wheel: hue around the circle, saturation toward the centre,
+ * with a brightness slider beneath so dark/light colours are reachable too.
+ */
+function ColorWheel({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (hex: string) => void;
+}) {
+  const SIZE = 220;
+  const radius = SIZE / 2;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastHex = useRef(value);
+  const [hsv, setHsv] = useState(() => rgbToHsv(...hexToRgb(value)));
+
+  // Sync internal HSV when the colour is changed from outside (e.g. reset).
+  useEffect(() => {
+    if (value.toLowerCase() !== lastHex.current.toLowerCase()) {
+      lastHex.current = value;
+      setHsv(rgbToHsv(...hexToRgb(value)));
+    }
+  }, [value]);
+
+  // Draw the wheel once: hue wedges + a white radial overlay for saturation.
+  useEffect(() => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    for (let a = 0; a < 360; a++) {
+      ctx.beginPath();
+      ctx.moveTo(radius, radius);
+      ctx.arc(
+        radius,
+        radius,
+        radius,
+        ((a - 0.5) * Math.PI) / 180,
+        ((a + 1.5) * Math.PI) / 180,
+      );
+      ctx.closePath();
+      ctx.fillStyle = `hsl(${a}, 100%, 50%)`;
+      ctx.fill();
+    }
+    const g = ctx.createRadialGradient(
+      radius,
+      radius,
+      0,
+      radius,
+      radius,
+      radius,
+    );
+    g.addColorStop(0, "rgba(255,255,255,1)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(radius, radius, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }, [radius]);
+
+  const emit = (next: { h: number; s: number; v: number }) => {
+    setHsv(next);
+    const hex = rgbToHex(...hsvToRgb(next.h, next.s, next.v));
+    lastHex.current = hex;
+    onChange(hex);
+  };
+
+  const pick = (clientX: number, clientY: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const scale = SIZE / rect.width;
+    const dx = (clientX - rect.left) * scale - radius;
+    const dy = (clientY - rect.top) * scale - radius;
+    let ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+    if (ang < 0) ang += 360;
+    const dist = Math.min(Math.hypot(dx, dy), radius);
+    emit({ h: ang, s: dist / radius, v: hsv.v });
+  };
+
+  // Marker position (hue angle + saturation radius).
+  const markRad = (hsv.h * Math.PI) / 180;
+  const mr = hsv.s * radius;
+  const mx = radius + mr * Math.cos(markRad);
+  const my = radius + mr * Math.sin(markRad);
+  const fullBright = rgbToHex(...hsvToRgb(hsv.h, hsv.s, 1));
+
+  return (
+    <div className="flex flex-col items-center">
+      <div
+        className="relative touch-none"
+        style={{ width: SIZE, height: SIZE }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={SIZE}
+          height={SIZE}
+          className="rounded-full cursor-crosshair"
+          style={{ width: SIZE, height: SIZE }}
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            pick(e.clientX, e.clientY);
+          }}
+          onPointerMove={(e) => {
+            if (e.buttons) pick(e.clientX, e.clientY);
+          }}
+        />
+        <span
+          className="pointer-events-none absolute h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white"
+          style={{
+            left: mx,
+            top: my,
+            background: value,
+            boxShadow: "0 0 0 1px rgba(0,0,0,.5)",
+          }}
+        />
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={Math.round(hsv.v * 100)}
+        onChange={(e) => emit({ ...hsv, v: Number(e.target.value) / 100 })}
+        className="mt-5 h-2 w-full cursor-pointer appearance-none rounded-full"
+        style={{ background: `linear-gradient(to right, #000, ${fullBright})` }}
+      />
+    </div>
+  );
+}
 
 // --- Canvas helpers --------------------------------------------------------
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -289,9 +495,68 @@ async function renderPoster(opts: PosterOptions): Promise<string> {
 }
 
 // --- Component -------------------------------------------------------------
+
 const QrGenerator = () => {
+  const [colorTheme, setColorTheme] = useState<ColorDefaultsTheme>("kiro");
+
+  const COLOR_FIELDS: { key: ColorKey; label: string; default: string }[] = [
+    {
+      key: "primary",
+      label: "Primär (QR & ram)",
+      default:
+        colorTheme === "kiro"
+          ? COLOR_DEFAULTS_KIRO.primary
+          : COLOR_DEFAULTS_IDROTTSMASSAGE.primary,
+    },
+    {
+      key: "background",
+      label: "Bakgrund",
+      default:
+        colorTheme === "kiro"
+          ? COLOR_DEFAULTS_KIRO.background
+          : COLOR_DEFAULTS_IDROTTSMASSAGE.background,
+    },
+    {
+      key: "gradientLight",
+      label: "Gradient ljus",
+      default:
+        colorTheme === "kiro"
+          ? COLOR_DEFAULTS_KIRO.gradientLight
+          : COLOR_DEFAULTS_IDROTTSMASSAGE.gradientLight,
+    },
+    {
+      key: "gradientDark",
+      label: "Gradient mörk",
+      default:
+        colorTheme === "kiro"
+          ? COLOR_DEFAULTS_KIRO.gradientDark
+          : COLOR_DEFAULTS_IDROTTSMASSAGE.gradientDark,
+    },
+    {
+      key: "title",
+      label: "Titel & namn",
+      default:
+        colorTheme === "kiro"
+          ? COLOR_DEFAULTS_KIRO.title
+          : COLOR_DEFAULTS_IDROTTSMASSAGE.title,
+    },
+    {
+      key: "message",
+      label: "Meddelandetext",
+      default:
+        colorTheme === "kiro"
+          ? COLOR_DEFAULTS_KIRO.message
+          : COLOR_DEFAULTS_IDROTTSMASSAGE.message,
+    },
+  ];
+
+  const DEFAULT_COLORS: Colors = COLOR_FIELDS.reduce((acc, f) => {
+    acc[f.key] = f.default;
+    return acc;
+  }, {} as Colors);
+
   const [amount, setAmount] = useState("750");
-  const [message, setMessage] = useState("Idrottsmassage");
+  const [message, setMessage] = useState(THEME_MESSAGE.kiro);
   const [colors, setColors] = useState<Colors>(DEFAULT_COLORS);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -299,9 +564,58 @@ const QrGenerator = () => {
   const [error, setError] = useState<string | null>(null);
   const [generated, setGenerated] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const [activeColor, setActiveColor] = useState<ColorKey | null>(null);
 
   const setColor = (key: ColorKey, value: string) =>
     setColors((prev) => ({ ...prev, [key]: value }));
+
+  // Switch theme and apply its colours + service text (overwrites any tweaks).
+  const applyTheme = (theme: ColorDefaultsTheme) => {
+    setColorTheme(theme);
+    setColors({ ...THEME_COLORS[theme] });
+    setMessage(THEME_MESSAGE[theme]);
+  };
+
+  // Real device fullscreen (no browser chrome) where the API is supported —
+  // Android Chrome & desktop. iOS Safari blocks element fullscreen, so the
+  // overlay below still covers the page but Safari's bars stay; for a truly
+  // chrome-free view on iPhone, "Lägg till på hemskärmen" (PWA) is the route.
+  const openFullscreen = () => {
+    setFullscreen(true);
+    const el = document.documentElement as HTMLElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    };
+    const req = el.requestFullscreen ?? el.webkitRequestFullscreen;
+    req?.call(el).catch(() => {});
+  };
+
+  const closeFullscreen = () => {
+    setFullscreen(false);
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void>;
+    };
+    if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
+      (doc.exitFullscreen ?? doc.webkitExitFullscreen)
+        ?.call(doc)
+        .catch(() => {});
+    }
+  };
+
+  // Sync state when the user leaves fullscreen via a system gesture/Esc.
+  useEffect(() => {
+    const onChange = () => {
+      const doc = document as Document & { webkitFullscreenElement?: Element };
+      if (!doc.fullscreenElement && !doc.webkitFullscreenElement)
+        setFullscreen(false);
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
+  }, []);
 
   // Live preview — re-render (debounced) whenever an input or colour changes.
   useEffect(() => {
@@ -393,26 +707,52 @@ const QrGenerator = () => {
               />
             </label>
 
+            {/* Färgtema */}
+            <p className="text-sm font-semibold text-neutral-200 mb-3">
+              Färgtema
+            </p>
+            <div className="mb-6 grid grid-cols-2 gap-3">
+              {(
+                [
+                  { key: "kiro", label: "Kiro" },
+                  { key: "idrottsmassage", label: "Idrottsmassage" },
+                ] as { key: ColorDefaultsTheme; label: string }[]
+              ).map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => applyTheme(t.key)}
+                  className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
+                    colorTheme === t.key
+                      ? "border-primary bg-primary text-black"
+                      : "border-primary bg-[#161616] text-neutral-200 hover:bg-[#1f1f1f]"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
             {/* Färger */}
             <p className="text-sm font-semibold text-neutral-200 mb-3">
               Färger
             </p>
             <div className="grid grid-cols-2 gap-3 mb-7">
               {COLOR_FIELDS.map((f) => (
-                <label
+                <button
                   key={f.key}
-                  className="flex items-center gap-3 rounded-xl bg-[#161616] border border-primary px-3 py-2"
+                  type="button"
+                  onClick={() => setActiveColor(f.key)}
+                  className="flex items-center gap-3 rounded-xl bg-[#161616] border border-primary px-3 py-2 text-left transition hover:bg-[#1f1f1f]"
                 >
-                  <input
-                    type="color"
-                    value={colors[f.key]}
-                    onChange={(e) => setColor(f.key, e.target.value)}
-                    className="h-9 w-9 shrink-0 cursor-pointer rounded-md border-0 bg-transparent p-0"
+                  <span
+                    className="h-9 w-9 shrink-0 rounded-md border border-white/20"
+                    style={{ background: colors[f.key] }}
                   />
                   <span className="text-xs text-neutral-300 leading-tight">
                     {f.label}
                   </span>
-                </label>
+                </button>
               ))}
             </div>
 
@@ -434,13 +774,13 @@ const QrGenerator = () => {
               <img
                 src={imageUrl}
                 alt="QR-affisch"
-                onClick={() => setFullscreen(true)}
+                onClick={openFullscreen}
                 className="w-72 rounded-xl  cursor-zoom-in"
               />
             )}
             <div className="mt-7 flex w-full gap-3">
               <button
-                onClick={() => setFullscreen(true)}
+                onClick={openFullscreen}
                 className="flex-1 rounded-xl bg-[#161616] border border-primary font-semibold py-4 transition hover:bg-[#1f1f1f]"
               >
                 Visa QR
@@ -465,7 +805,7 @@ const QrGenerator = () => {
       {/* Fullscreen view */}
       {fullscreen && imageUrl && (
         <div
-          onClick={() => setFullscreen(false)}
+          onClick={closeFullscreen}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black p-4"
         >
           <img
@@ -473,6 +813,62 @@ const QrGenerator = () => {
             alt="QR-affisch"
             className="max-h-full max-w-full object-contain"
           />
+        </div>
+      )}
+
+      {/* Colour picker (gradient wheel) */}
+      {activeColor && (
+        <div
+          onClick={() => setActiveColor(null)}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border border-primary bg-[#161616] p-5"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-sm font-semibold text-neutral-100">
+                {COLOR_FIELDS.find((f) => f.key === activeColor)?.label}
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveColor(null)}
+                className="rounded-lg bg-primary px-4 py-1.5 text-sm font-bold text-black transition hover:opacity-90"
+              >
+                Klar
+              </button>
+            </div>
+
+            <ColorWheel
+              value={colors[activeColor]}
+              onChange={(hex) => setColor(activeColor, hex)}
+            />
+
+            <div className="mt-5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span
+                  className="h-7 w-7 rounded-md border border-white/20"
+                  style={{ background: colors[activeColor] }}
+                />
+                <span className="font-mono text-xs uppercase text-neutral-300">
+                  {colors[activeColor]}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setColor(activeColor, DEFAULT_COLORS[activeColor])
+                }
+                disabled={
+                  colors[activeColor].toLowerCase() ===
+                  DEFAULT_COLORS[activeColor].toLowerCase()
+                }
+                className="rounded-lg border border-primary px-4 py-1.5 text-sm font-semibold text-neutral-200 transition hover:bg-[#1f1f1f] disabled:opacity-40"
+              >
+                Återställ
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
