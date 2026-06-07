@@ -315,22 +315,26 @@ interface PosterOptions {
   colors: Colors;
 }
 
-async function renderPoster(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors } = opts;
-
-  // --- Swish deep link ---------------------------------------------------
-  // Encoding "swish://payment?data=..." so a native camera opens the Swish app.
+/** Build the Swish "swish://payment?data=..." deep link encoded in the QR. */
+function swishDeepLink(amount: number, message: string, swishNumber: string) {
   const payload = {
     version: 1,
     payee: { value: swishNumber.replace(/\D/g, "") },
     amount: { value: amount },
     message: { value: message },
   };
-  const data =
-    "swish://payment?data=" + encodeURIComponent(JSON.stringify(payload));
-  const displayNumber = formatSwishNumber(swishNumber);
+  return "swish://payment?data=" + encodeURIComponent(JSON.stringify(payload));
+}
 
-  // --- 1. Build the QR tile ---------------------------------------------
+/**
+ * Render just the QR tile — diamond modules, rounded finders and the centre
+ * Swish logo on a circular backplate. Used both inside the poster and on its
+ * own for the landscape "scan me" view.
+ */
+async function buildQrTile(
+  data: string,
+  colors: Colors,
+): Promise<HTMLCanvasElement> {
   const qr = QRCode.create(data, { errorCorrectionLevel: "Q" });
   const n = qr.modules.size;
   const bits = qr.modules.data;
@@ -425,6 +429,23 @@ async function renderPoster(opts: PosterOptions): Promise<string> {
   qctx.ellipse(mid, mid, diameter / 2, diameter / 2, 0, 0, Math.PI * 2);
   qctx.fill();
   qctx.drawImage(centerLogo, mid - lW / 2, mid - lH / 2, lW, lH);
+
+  return qrCanvas;
+}
+
+/** Standalone QR tile (used for the large landscape "scan me" view). */
+async function renderQrOnly(opts: PosterOptions): Promise<string> {
+  const { amount, message, swishNumber, colors } = opts;
+  const data = swishDeepLink(amount, message, swishNumber);
+  const tile = await buildQrTile(data, colors);
+  return tile.toDataURL("image/png");
+}
+
+async function renderPoster(opts: PosterOptions): Promise<string> {
+  const { amount, message, swishNumber, colors } = opts;
+  const data = swishDeepLink(amount, message, swishNumber);
+  const displayNumber = formatSwishNumber(swishNumber);
+  const qrCanvas = await buildQrTile(data, colors);
 
   // --- 2. Compose the Sanctum poster ------------------------------------
   const canvas = document.createElement("canvas");
@@ -560,10 +581,12 @@ const QrGenerator = () => {
   const [colors, setColors] = useState<Colors>(DEFAULT_COLORS);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [qrOnlyUrl, setQrOnlyUrl] = useState<string | null>(null);
   const [isRendering, setIsRendering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generated, setGenerated] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
   const [activeColor, setActiveColor] = useState<ColorKey | null>(null);
 
   const setColor = (key: ColorKey, value: string) =>
@@ -617,20 +640,54 @@ const QrGenerator = () => {
     };
   }, []);
 
+  // Track landscape orientation — used to show just the big QR for scanning.
+  useEffect(() => {
+    const mq = window.matchMedia("(orientation: landscape)");
+    const update = () => setIsLandscape(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // Enter real device fullscreen while landscape (Android/desktop; iOS Safari
+  // ignores it). Some browsers only honour this from a user gesture, so the
+  // request may be rejected on a pure rotation — harmless, we just catch it.
+  useEffect(() => {
+    const el = document.documentElement as HTMLElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    };
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void>;
+    };
+    if (generated && isLandscape) {
+      (el.requestFullscreen ?? el.webkitRequestFullscreen)
+        ?.call(el)
+        .catch(() => {});
+    } else if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
+      (doc.exitFullscreen ?? doc.webkitExitFullscreen)?.call(doc).catch(() => {});
+    }
+  }, [isLandscape, generated]);
+
   // Live preview — re-render (debounced) whenever an input or colour changes.
   useEffect(() => {
     let cancelled = false;
     setIsRendering(true);
     const t = setTimeout(async () => {
       try {
-        const url = await renderPoster({
+        const opts = {
           amount: Number(amount) || 0,
           message: message.trim(),
           swishNumber: DEFAULT_SWISH_NUMBER,
           colors,
-        });
+        };
+        const [poster, qrOnly] = await Promise.all([
+          renderPoster(opts),
+          renderQrOnly(opts),
+        ]);
         if (!cancelled) {
-          setImageUrl(url);
+          setImageUrl(poster);
+          setQrOnlyUrl(qrOnly);
           setError(null);
         }
       } catch (e) {
@@ -656,6 +713,19 @@ const QrGenerator = () => {
     link.download = `${slug}_qr.png`;
     link.click();
   };
+
+  // After "Generera QR", in landscape: show nothing but a big QR for scanning.
+  if (generated && isLandscape && qrOnlyUrl) {
+    return (
+      <div className="fixed inset-0 z-60 flex items-center justify-center bg-black p-4">
+        <img
+          src={qrOnlyUrl}
+          alt="Swish QR-kod"
+          className="h-full max-h-full w-auto max-w-full object-contain"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-black text-white flex justify-center">
