@@ -313,17 +313,68 @@ interface PosterOptions {
   message: string;
   swishNumber: string;
   colors: Colors;
+  mode: QrMode;
+  allowTip: boolean;
 }
 
-/** Build the Swish "swish://payment?data=..." deep link encoded in the QR. */
-function swishDeepLink(amount: number, message: string, swishNumber: string) {
+// Which scanner the QR targets:
+//  - "swish":  Type C string, read by the Swish app's own in-app scanner.
+//  - "camera": "swish://" deep link, opened by a phone's native camera.
+// A single QR can only be one of these (see the two builders below).
+type QrMode = "swish" | "camera";
+
+/**
+ * Swish "Type C" QR string that the Swish app's own scanner reads:
+ *   C<number>;<amount>;<message>;<editable bitmask>
+ * Bitmask bits: 1 = number editable, 2 = amount editable, 4 = message editable.
+ */
+function swishTypeC(
+  amount: number,
+  message: string,
+  swishNumber: string,
+  allowTip: boolean,
+) {
+  const number = swishNumber.replace(/\D/g, "");
+  // Semicolons separate fields, so they can't appear inside the message; Swish
+  // also caps the message at 50 characters.
+  const msg = message.replace(/;/g, " ").slice(0, 50);
+  const amountField = amount > 0 ? String(amount) : "";
+  // Make the amount editable when tips are allowed, or when no amount is set
+  // (Swish needs the payer to enter one). Otherwise lock everything.
+  const amountEditable = allowTip || amount <= 0;
+  const editable = amountEditable ? 0b010 : 0;
+  return `C${number};${amountField};${msg};${editable}`;
+}
+
+/**
+ * "swish://payment?data=..." deep link. A phone's native camera follows the
+ * URL scheme into the Swish app; the Swish app's own scanner does NOT read it.
+ */
+function swishDeepLink(
+  amount: number,
+  message: string,
+  swishNumber: string,
+  allowTip: boolean,
+) {
   const payload = {
     version: 1,
     payee: { value: swishNumber.replace(/\D/g, "") },
-    amount: { value: amount },
+    amount: { value: amount, editable: allowTip || amount <= 0 },
     message: { value: message },
   };
   return "swish://payment?data=" + encodeURIComponent(JSON.stringify(payload));
+}
+
+function swishQrData(
+  mode: QrMode,
+  amount: number,
+  message: string,
+  swishNumber: string,
+  allowTip: boolean,
+) {
+  return mode === "camera"
+    ? swishDeepLink(amount, message, swishNumber, allowTip)
+    : swishTypeC(amount, message, swishNumber, allowTip);
 }
 
 /**
@@ -435,15 +486,15 @@ async function buildQrTile(
 
 /** Standalone QR tile (used for the large landscape "scan me" view). */
 async function renderQrOnly(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors } = opts;
-  const data = swishDeepLink(amount, message, swishNumber);
+  const { amount, message, swishNumber, colors, mode, allowTip } = opts;
+  const data = swishQrData(mode, amount, message, swishNumber, allowTip);
   const tile = await buildQrTile(data, colors);
   return tile.toDataURL("image/png");
 }
 
 async function renderPoster(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors } = opts;
-  const data = swishDeepLink(amount, message, swishNumber);
+  const { amount, message, swishNumber, colors, mode, allowTip } = opts;
+  const data = swishQrData(mode, amount, message, swishNumber, allowTip);
   const displayNumber = formatSwishNumber(swishNumber);
   const qrCanvas = await buildQrTile(data, colors);
 
@@ -579,6 +630,8 @@ const QrGenerator = () => {
   const [amount, setAmount] = useState("750");
   const [message, setMessage] = useState(THEME_MESSAGE.kiro);
   const [colors, setColors] = useState<Colors>(DEFAULT_COLORS);
+  const [mode, setMode] = useState<QrMode>("swish");
+  const [allowTip, setAllowTip] = useState(false);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [qrOnlyUrl, setQrOnlyUrl] = useState<string | null>(null);
@@ -599,46 +652,11 @@ const QrGenerator = () => {
     setMessage(THEME_MESSAGE[theme]);
   };
 
-  // Real device fullscreen (no browser chrome) where the API is supported —
-  // Android Chrome & desktop. iOS Safari blocks element fullscreen, so the
-  // overlay below still covers the page but Safari's bars stay; for a truly
-  // chrome-free view on iPhone, "Lägg till på hemskärmen" (PWA) is the route.
-  const openFullscreen = () => {
-    setFullscreen(true);
-    const el = document.documentElement as HTMLElement & {
-      webkitRequestFullscreen?: () => Promise<void>;
-    };
-    const req = el.requestFullscreen ?? el.webkitRequestFullscreen;
-    req?.call(el).catch(() => {});
-  };
-
-  const closeFullscreen = () => {
-    setFullscreen(false);
-    const doc = document as Document & {
-      webkitFullscreenElement?: Element;
-      webkitExitFullscreen?: () => Promise<void>;
-    };
-    if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
-      (doc.exitFullscreen ?? doc.webkitExitFullscreen)
-        ?.call(doc)
-        .catch(() => {});
-    }
-  };
-
-  // Sync state when the user leaves fullscreen via a system gesture/Esc.
-  useEffect(() => {
-    const onChange = () => {
-      const doc = document as Document & { webkitFullscreenElement?: Element };
-      if (!doc.fullscreenElement && !doc.webkitFullscreenElement)
-        setFullscreen(false);
-    };
-    document.addEventListener("fullscreenchange", onChange);
-    document.addEventListener("webkitfullscreenchange", onChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", onChange);
-      document.removeEventListener("webkitfullscreenchange", onChange);
-    };
-  }, []);
+  // The "fullscreen" view is just an in-page overlay covering the viewport —
+  // we don't request real device fullscreen (it was janky across browsers and
+  // iOS Safari blocks it anyway).
+  const openFullscreen = () => setFullscreen(true);
+  const closeFullscreen = () => setFullscreen(false);
 
   // Track landscape orientation — used to show just the big QR for scanning.
   useEffect(() => {
@@ -648,26 +666,6 @@ const QrGenerator = () => {
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-
-  // Enter real device fullscreen while landscape (Android/desktop; iOS Safari
-  // ignores it). Some browsers only honour this from a user gesture, so the
-  // request may be rejected on a pure rotation — harmless, we just catch it.
-  useEffect(() => {
-    const el = document.documentElement as HTMLElement & {
-      webkitRequestFullscreen?: () => Promise<void>;
-    };
-    const doc = document as Document & {
-      webkitFullscreenElement?: Element;
-      webkitExitFullscreen?: () => Promise<void>;
-    };
-    if (generated && isLandscape) {
-      (el.requestFullscreen ?? el.webkitRequestFullscreen)
-        ?.call(el)
-        .catch(() => {});
-    } else if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
-      (doc.exitFullscreen ?? doc.webkitExitFullscreen)?.call(doc).catch(() => {});
-    }
-  }, [isLandscape, generated]);
 
   // Live preview — re-render (debounced) whenever an input or colour changes.
   useEffect(() => {
@@ -680,6 +678,8 @@ const QrGenerator = () => {
           message: message.trim(),
           swishNumber: DEFAULT_SWISH_NUMBER,
           colors,
+          mode,
+          allowTip,
         };
         const [poster, qrOnly] = await Promise.all([
           renderPoster(opts),
@@ -701,7 +701,7 @@ const QrGenerator = () => {
       cancelled = true;
       clearTimeout(t);
     };
-  }, [amount, message, colors]);
+  }, [amount, message, colors, mode, allowTip]);
 
   const handleDownload = () => {
     if (!imageUrl) return;
@@ -776,6 +776,62 @@ const QrGenerator = () => {
                 className="mt-1 w-full rounded-xl bg-[#161616] border border-primary px-4 py-3 text-white focus:border-primary focus:outline-none"
               />
             </label>
+
+            {/* QR-typ: vem som ska kunna skanna koden */}
+            <p className="text-sm font-semibold text-neutral-200 mb-3">
+              QR-typ
+            </p>
+            <div className="mb-2 grid grid-cols-2 gap-3">
+              {(
+                [
+                  { key: "swish", label: "Swish-appen" },
+                  { key: "camera", label: "Mobilkamera" },
+                ] as { key: QrMode; label: string }[]
+              ).map((m) => (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => setMode(m.key)}
+                  className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
+                    mode === m.key
+                      ? "border-primary bg-primary text-black"
+                      : "border-primary bg-[#161616] text-neutral-200 hover:bg-[#1f1f1f]"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+            <p className="mb-6 text-xs leading-snug text-neutral-500">
+              {mode === "swish"
+                ? "Skannas inifrån Swish-appen (”Skanna QR-kod”). Så fungerar officiella Swish-koder."
+                : "Öppnas med mobilens vanliga kamera, som föreslår att öppna Swish-appen."}
+            </p>
+
+            {/* Dricks: gör beloppet redigerbart så kunden kan lägga till dricks */}
+            <button
+              type="button"
+              onClick={() => setAllowTip((v) => !v)}
+              className="mb-6 flex w-full items-center justify-between rounded-xl bg-[#161616] border border-primary px-4 py-3 text-left transition hover:bg-[#1f1f1f]"
+            >
+              <span className="text-sm text-neutral-200">
+                Tillåt dricks
+                <span className="block text-xs text-neutral-500">
+                  Kunden kan ändra beloppet i appen
+                </span>
+              </span>
+              <span
+                className={`relative h-6 w-11 shrink-0 rounded-full transition ${
+                  allowTip ? "bg-primary" : "bg-neutral-700"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${
+                    allowTip ? "left-5.5" : "left-0.5"
+                  }`}
+                />
+              </span>
+            </button>
 
             {/* Färgtema */}
             <p className="text-sm font-semibold text-neutral-200 mb-3">
