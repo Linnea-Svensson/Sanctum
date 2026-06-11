@@ -6,8 +6,8 @@ import QRCode from "qrcode";
  *
  * The original script renders a Swish payment poster with Pillow. A deployed
  * SPA (and a phone) can't run Python, so the exact same rendering is done here
- * on a <canvas>: a "swish://payment?data=..." deep link encoded as a QR with
- * diamond modules + rounded finder patterns, a centre logo, and a Sanctum
+ * on a <canvas>: an "https://app.swish.nu/..." payment link encoded as a QR
+ * with diamond modules + rounded finder patterns, a centre logo, and a Sanctum
  * poster around it. Amount, service text and every colour are editable.
  */
 
@@ -323,7 +323,7 @@ function swishQrData(
   swishNumber: string,
   allowTip: boolean,
 ) {
-  return `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${message.replaceAll(" ", "%20")}`;
+  return `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${encodeURIComponent(message)}`;
 }
 
 async function buildQrTile(
@@ -595,13 +595,42 @@ const QrGenerator = () => {
     setMessage(THEME_MESSAGE[theme]);
   };
 
-  // The "fullscreen" view is just an in-page overlay covering the viewport —
-  // we don't request real device fullscreen (it was janky across browsers and
-  // iOS Safari blocks it anyway).
-  const openFullscreen = () => setFullscreen(true);
-  const closeFullscreen = () => setFullscreen(false);
+  const openFullscreen = () => {
+    setFullscreen(true);
+    const el = document.documentElement as HTMLElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    };
+    const req = el.requestFullscreen ?? el.webkitRequestFullscreen;
+    req?.call(el).catch(() => {});
+  };
 
-  // Track landscape orientation — used to show just the big QR for scanning.
+  const closeFullscreen = () => {
+    setFullscreen(false);
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void>;
+    };
+    if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
+      (doc.exitFullscreen ?? doc.webkitExitFullscreen)
+        ?.call(doc)
+        .catch(() => {});
+    }
+  };
+
+  useEffect(() => {
+    const onChange = () => {
+      const doc = document as Document & { webkitFullscreenElement?: Element };
+      if (!doc.fullscreenElement && !doc.webkitFullscreenElement)
+        setFullscreen(false);
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
+  }, []);
+
   useEffect(() => {
     const mq = window.matchMedia("(orientation: landscape)");
     const update = () => setIsLandscape(mq.matches);
@@ -610,7 +639,25 @@ const QrGenerator = () => {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // Live preview — re-render (debounced) whenever an input or colour changes.
+  useEffect(() => {
+    const el = document.documentElement as HTMLElement & {
+      webkitRequestFullscreen?: () => Promise<void>;
+    };
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void>;
+    };
+    if (generated && isLandscape) {
+      (el.requestFullscreen ?? el.webkitRequestFullscreen)
+        ?.call(el)
+        .catch(() => {});
+    } else if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
+      (doc.exitFullscreen ?? doc.webkitExitFullscreen)
+        ?.call(doc)
+        .catch(() => {});
+    }
+  }, [isLandscape, generated]);
+
   useEffect(() => {
     let cancelled = false;
     setIsRendering(true);
