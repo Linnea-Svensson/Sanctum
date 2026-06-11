@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacypolicyRouteImport } from './routes/privacypolicy'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PS4q9jk8azRouteImport } from './routes/p.s4q9jk8az'
 import { Route as PQ7kf9m2dxzRouteImport } from './routes/p.q7kf9m2dxz'
@@ -17,6 +18,11 @@ import { Route as PQ7kf9m2dxzRouteImport } from './routes/p.q7kf9m2dxz'
 const PrivacypolicyRoute = PrivacypolicyRouteImport.update({
   id: '/privacypolicy',
   path: '/privacypolicy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const PQ7kf9m2dxzRoute = PQ7kf9m2dxzRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/privacypolicy': typeof PrivacypolicyRoute
   '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
   '/p/s4q9jk8az': typeof PS4q9jk8azRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/privacypolicy': typeof PrivacypolicyRoute
   '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
   '/p/s4q9jk8az': typeof PS4q9jk8azRoute
@@ -50,20 +58,33 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/privacypolicy': typeof PrivacypolicyRoute
   '/p/q7kf9m2dxz': typeof PQ7kf9m2dxzRoute
   '/p/s4q9jk8az': typeof PS4q9jk8azRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/privacypolicy' | '/p/q7kf9m2dxz' | '/p/s4q9jk8az'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/privacypolicy'
+    | '/p/q7kf9m2dxz'
+    | '/p/s4q9jk8az'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/privacypolicy' | '/p/q7kf9m2dxz' | '/p/s4q9jk8az'
-  id: '__root__' | '/' | '/privacypolicy' | '/p/q7kf9m2dxz' | '/p/s4q9jk8az'
+  to: '/' | '/dashboard' | '/privacypolicy' | '/p/q7kf9m2dxz' | '/p/s4q9jk8az'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/privacypolicy'
+    | '/p/q7kf9m2dxz'
+    | '/p/s4q9jk8az'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   PrivacypolicyRoute: typeof PrivacypolicyRoute
   PQ7kf9m2dxzRoute: typeof PQ7kf9m2dxzRoute
   PS4q9jk8azRoute: typeof PS4q9jk8azRoute
@@ -76,6 +97,13 @@ declare module '@tanstack/react-router' {
       path: '/privacypolicy'
       fullPath: '/privacypolicy'
       preLoaderRoute: typeof PrivacypolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   PrivacypolicyRoute: PrivacypolicyRoute,
   PQ7kf9m2dxzRoute: PQ7kf9m2dxzRoute,
   PS4q9jk8azRoute: PS4q9jk8azRoute,

@@ -13,7 +13,8 @@ export const Navbar = () => {
 
   return (
     !location.includes("/p/q7kf9m2dxz") &&
-    !location.includes("/p/s4q9jk8az") && (
+    !location.includes("/p/s4q9jk8az") &&
+    !location.includes("/dashboard") && (
       <nav
         aria-label="Huvudmeny"
         className="border-b z-50 bg-black/50 border-primary px-6 md:px-20 py-4 md:py-6 sticky top-0 left-0"

@@ -13,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { AuthProvider } from "./auth/AuthProvider";
 import "./index.css";
 import "./App.css";
 
@@ -35,7 +36,9 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </StrictMode>,
   );
 }

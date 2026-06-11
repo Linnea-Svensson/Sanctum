@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import QrGenerator from "../pages/qrGenerator";
 import { RequireAdmin } from "../auth/RequireAdmin";
+import Dashboard from "../pages/Dashboard";
 
-export const Route = createFileRoute("/p/s4q9jk8az")({
+export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [{ name: "robots", content: "noindex, nofollow" }],
   }),
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/p/s4q9jk8az")({
 function RouteComponent() {
   return (
     <RequireAdmin>
-      <QrGenerator />
+      <Dashboard />
     </RequireAdmin>
   );
 }
