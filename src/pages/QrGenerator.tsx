@@ -55,11 +55,12 @@ const THEME_MESSAGE: { [key in ColorDefaultsTheme]: string } = {
   idrottsmassage: "Idrottsmassage",
 };
 
-const THEME_COLORS: { [key in ColorDefaultsTheme]: { [k in ColorKey]: string } } =
-  {
-    kiro: COLOR_DEFAULTS_KIRO,
-    idrottsmassage: COLOR_DEFAULTS_IDROTTSMASSAGE,
-  };
+const THEME_COLORS: {
+  [key in ColorDefaultsTheme]: { [k in ColorKey]: string };
+} = {
+  kiro: COLOR_DEFAULTS_KIRO,
+  idrottsmassage: COLOR_DEFAULTS_IDROTTSMASSAGE,
+};
 
 type Colors = Record<ColorKey, string>;
 
@@ -313,24 +314,18 @@ interface PosterOptions {
   message: string;
   swishNumber: string;
   colors: Colors;
+  allowTip: boolean;
 }
 
-/** Build the Swish "swish://payment?data=..." deep link encoded in the QR. */
-function swishDeepLink(amount: number, message: string, swishNumber: string) {
-  const payload = {
-    version: 1,
-    payee: { value: swishNumber.replace(/\D/g, "") },
-    amount: { value: amount },
-    message: { value: message },
-  };
-  return "swish://payment?data=" + encodeURIComponent(JSON.stringify(payload));
+function swishQrData(
+  amount: number,
+  message: string,
+  swishNumber: string,
+  allowTip: boolean,
+) {
+  return `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${message.replaceAll(" ", "%20")}`;
 }
 
-/**
- * Render just the QR tile — diamond modules, rounded finders and the centre
- * Swish logo on a circular backplate. Used both inside the poster and on its
- * own for the landscape "scan me" view.
- */
 async function buildQrTile(
   data: string,
   colors: Colors,
@@ -435,15 +430,15 @@ async function buildQrTile(
 
 /** Standalone QR tile (used for the large landscape "scan me" view). */
 async function renderQrOnly(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors } = opts;
-  const data = swishDeepLink(amount, message, swishNumber);
+  const { amount, message, swishNumber, colors, allowTip } = opts;
+  const data = swishQrData(amount, message, swishNumber, allowTip);
   const tile = await buildQrTile(data, colors);
   return tile.toDataURL("image/png");
 }
 
 async function renderPoster(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors } = opts;
-  const data = swishDeepLink(amount, message, swishNumber);
+  const { amount, message, swishNumber, colors, allowTip } = opts;
+  const data = swishQrData(amount, message, swishNumber, allowTip);
   const displayNumber = formatSwishNumber(swishNumber);
   const qrCanvas = await buildQrTile(data, colors);
 
@@ -579,6 +574,7 @@ const QrGenerator = () => {
   const [amount, setAmount] = useState("750");
   const [message, setMessage] = useState(THEME_MESSAGE.kiro);
   const [colors, setColors] = useState<Colors>(DEFAULT_COLORS);
+  const [allowTip, setAllowTip] = useState(false);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [qrOnlyUrl, setQrOnlyUrl] = useState<string | null>(null);
@@ -599,46 +595,11 @@ const QrGenerator = () => {
     setMessage(THEME_MESSAGE[theme]);
   };
 
-  // Real device fullscreen (no browser chrome) where the API is supported —
-  // Android Chrome & desktop. iOS Safari blocks element fullscreen, so the
-  // overlay below still covers the page but Safari's bars stay; for a truly
-  // chrome-free view on iPhone, "Lägg till på hemskärmen" (PWA) is the route.
-  const openFullscreen = () => {
-    setFullscreen(true);
-    const el = document.documentElement as HTMLElement & {
-      webkitRequestFullscreen?: () => Promise<void>;
-    };
-    const req = el.requestFullscreen ?? el.webkitRequestFullscreen;
-    req?.call(el).catch(() => {});
-  };
-
-  const closeFullscreen = () => {
-    setFullscreen(false);
-    const doc = document as Document & {
-      webkitFullscreenElement?: Element;
-      webkitExitFullscreen?: () => Promise<void>;
-    };
-    if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
-      (doc.exitFullscreen ?? doc.webkitExitFullscreen)
-        ?.call(doc)
-        .catch(() => {});
-    }
-  };
-
-  // Sync state when the user leaves fullscreen via a system gesture/Esc.
-  useEffect(() => {
-    const onChange = () => {
-      const doc = document as Document & { webkitFullscreenElement?: Element };
-      if (!doc.fullscreenElement && !doc.webkitFullscreenElement)
-        setFullscreen(false);
-    };
-    document.addEventListener("fullscreenchange", onChange);
-    document.addEventListener("webkitfullscreenchange", onChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", onChange);
-      document.removeEventListener("webkitfullscreenchange", onChange);
-    };
-  }, []);
+  // The "fullscreen" view is just an in-page overlay covering the viewport —
+  // we don't request real device fullscreen (it was janky across browsers and
+  // iOS Safari blocks it anyway).
+  const openFullscreen = () => setFullscreen(true);
+  const closeFullscreen = () => setFullscreen(false);
 
   // Track landscape orientation — used to show just the big QR for scanning.
   useEffect(() => {
@@ -648,26 +609,6 @@ const QrGenerator = () => {
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-
-  // Enter real device fullscreen while landscape (Android/desktop; iOS Safari
-  // ignores it). Some browsers only honour this from a user gesture, so the
-  // request may be rejected on a pure rotation — harmless, we just catch it.
-  useEffect(() => {
-    const el = document.documentElement as HTMLElement & {
-      webkitRequestFullscreen?: () => Promise<void>;
-    };
-    const doc = document as Document & {
-      webkitFullscreenElement?: Element;
-      webkitExitFullscreen?: () => Promise<void>;
-    };
-    if (generated && isLandscape) {
-      (el.requestFullscreen ?? el.webkitRequestFullscreen)
-        ?.call(el)
-        .catch(() => {});
-    } else if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
-      (doc.exitFullscreen ?? doc.webkitExitFullscreen)?.call(doc).catch(() => {});
-    }
-  }, [isLandscape, generated]);
 
   // Live preview — re-render (debounced) whenever an input or colour changes.
   useEffect(() => {
@@ -680,6 +621,7 @@ const QrGenerator = () => {
           message: message.trim(),
           swishNumber: DEFAULT_SWISH_NUMBER,
           colors,
+          allowTip,
         };
         const [poster, qrOnly] = await Promise.all([
           renderPoster(opts),
@@ -701,7 +643,7 @@ const QrGenerator = () => {
       cancelled = true;
       clearTimeout(t);
     };
-  }, [amount, message, colors]);
+  }, [amount, message, colors, allowTip]);
 
   const handleDownload = () => {
     if (!imageUrl) return;
@@ -776,6 +718,31 @@ const QrGenerator = () => {
                 className="mt-1 w-full rounded-xl bg-[#161616] border border-primary px-4 py-3 text-white focus:border-primary focus:outline-none"
               />
             </label>
+
+            {/* Dricks: gör beloppet redigerbart så kunden kan lägga till dricks */}
+            <button
+              type="button"
+              onClick={() => setAllowTip((v) => !v)}
+              className="mb-6 flex w-full items-center justify-between rounded-xl bg-[#161616] border border-primary px-4 py-3 text-left transition hover:bg-[#1f1f1f]"
+            >
+              <span className="text-sm text-neutral-200">
+                Tillåt dricks
+                <span className="block text-xs text-neutral-500">
+                  Kunden kan ändra beloppet i appen
+                </span>
+              </span>
+              <span
+                className={`relative h-6 w-11 shrink-0 rounded-full transition ${
+                  allowTip ? "bg-primary" : "bg-neutral-700"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${
+                    allowTip ? "left-5.5" : "left-0.5"
+                  }`}
+                />
+              </span>
+            </button>
 
             {/* Färgtema */}
             <p className="text-sm font-semibold text-neutral-200 mb-3">
