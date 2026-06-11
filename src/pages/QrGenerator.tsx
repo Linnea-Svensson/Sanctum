@@ -55,11 +55,12 @@ const THEME_MESSAGE: { [key in ColorDefaultsTheme]: string } = {
   idrottsmassage: "Idrottsmassage",
 };
 
-const THEME_COLORS: { [key in ColorDefaultsTheme]: { [k in ColorKey]: string } } =
-  {
-    kiro: COLOR_DEFAULTS_KIRO,
-    idrottsmassage: COLOR_DEFAULTS_IDROTTSMASSAGE,
-  };
+const THEME_COLORS: {
+  [key in ColorDefaultsTheme]: { [k in ColorKey]: string };
+} = {
+  kiro: COLOR_DEFAULTS_KIRO,
+  idrottsmassage: COLOR_DEFAULTS_IDROTTSMASSAGE,
+};
 
 type Colors = Record<ColorKey, string>;
 
@@ -313,75 +314,21 @@ interface PosterOptions {
   message: string;
   swishNumber: string;
   colors: Colors;
-  mode: QrMode;
   allowTip: boolean;
 }
 
-// Which scanner the QR targets:
-//  - "swish":  Type C string, read by the Swish app's own in-app scanner.
-//  - "camera": "swish://" deep link, opened by a phone's native camera.
-// A single QR can only be one of these (see the two builders below).
-type QrMode = "swish" | "camera";
-
-/**
- * Swish "Type C" QR string that the Swish app's own scanner reads:
- *   C<number>;<amount>;<message>;<editable bitmask>
- * Bitmask bits: 1 = number editable, 2 = amount editable, 4 = message editable.
- */
-function swishTypeC(
-  amount: number,
-  message: string,
-  swishNumber: string,
-  allowTip: boolean,
-) {
-  const number = swishNumber.replace(/\D/g, "");
-  // Semicolons separate fields, so they can't appear inside the message; Swish
-  // also caps the message at 50 characters.
-  const msg = message.replace(/;/g, " ").slice(0, 50);
-  const amountField = amount > 0 ? String(amount) : "";
-  // Make the amount editable when tips are allowed, or when no amount is set
-  // (Swish needs the payer to enter one). Otherwise lock everything.
-  const amountEditable = allowTip || amount <= 0;
-  const editable = amountEditable ? 0b010 : 0;
-  return `C${number};${amountField};${msg};${editable}`;
-}
-
-/**
- * "swish://payment?data=..." deep link. A phone's native camera follows the
- * URL scheme into the Swish app; the Swish app's own scanner does NOT read it.
- */
-function swishDeepLink(
-  amount: number,
-  message: string,
-  swishNumber: string,
-  allowTip: boolean,
-) {
-  const payload = {
-    version: 1,
-    payee: { value: swishNumber.replace(/\D/g, "") },
-    amount: { value: amount, editable: allowTip || amount <= 0 },
-    message: { value: message },
-  };
-  return "swish://payment?data=" + encodeURIComponent(JSON.stringify(payload));
-}
-
 function swishQrData(
-  mode: QrMode,
   amount: number,
   message: string,
   swishNumber: string,
   allowTip: boolean,
 ) {
-  return mode === "camera"
-    ? swishDeepLink(amount, message, swishNumber, allowTip)
-    : swishTypeC(amount, message, swishNumber, allowTip);
+  console.log(
+    `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${message.replaceAll(" ", "%20")}`,
+  );
+  return `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${message.replaceAll(" ", "%20")}`;
 }
 
-/**
- * Render just the QR tile — diamond modules, rounded finders and the centre
- * Swish logo on a circular backplate. Used both inside the poster and on its
- * own for the landscape "scan me" view.
- */
 async function buildQrTile(
   data: string,
   colors: Colors,
@@ -486,15 +433,15 @@ async function buildQrTile(
 
 /** Standalone QR tile (used for the large landscape "scan me" view). */
 async function renderQrOnly(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors, mode, allowTip } = opts;
-  const data = swishQrData(mode, amount, message, swishNumber, allowTip);
+  const { amount, message, swishNumber, colors, allowTip } = opts;
+  const data = swishQrData(amount, message, swishNumber, allowTip);
   const tile = await buildQrTile(data, colors);
   return tile.toDataURL("image/png");
 }
 
 async function renderPoster(opts: PosterOptions): Promise<string> {
-  const { amount, message, swishNumber, colors, mode, allowTip } = opts;
-  const data = swishQrData(mode, amount, message, swishNumber, allowTip);
+  const { amount, message, swishNumber, colors, allowTip } = opts;
+  const data = swishQrData(amount, message, swishNumber, allowTip);
   const displayNumber = formatSwishNumber(swishNumber);
   const qrCanvas = await buildQrTile(data, colors);
 
@@ -630,7 +577,6 @@ const QrGenerator = () => {
   const [amount, setAmount] = useState("750");
   const [message, setMessage] = useState(THEME_MESSAGE.kiro);
   const [colors, setColors] = useState<Colors>(DEFAULT_COLORS);
-  const [mode, setMode] = useState<QrMode>("swish");
   const [allowTip, setAllowTip] = useState(false);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -678,7 +624,6 @@ const QrGenerator = () => {
           message: message.trim(),
           swishNumber: DEFAULT_SWISH_NUMBER,
           colors,
-          mode,
           allowTip,
         };
         const [poster, qrOnly] = await Promise.all([
@@ -701,7 +646,7 @@ const QrGenerator = () => {
       cancelled = true;
       clearTimeout(t);
     };
-  }, [amount, message, colors, mode, allowTip]);
+  }, [amount, message, colors, allowTip]);
 
   const handleDownload = () => {
     if (!imageUrl) return;
@@ -776,37 +721,6 @@ const QrGenerator = () => {
                 className="mt-1 w-full rounded-xl bg-[#161616] border border-primary px-4 py-3 text-white focus:border-primary focus:outline-none"
               />
             </label>
-
-            {/* QR-typ: vem som ska kunna skanna koden */}
-            <p className="text-sm font-semibold text-neutral-200 mb-3">
-              QR-typ
-            </p>
-            <div className="mb-2 grid grid-cols-2 gap-3">
-              {(
-                [
-                  { key: "swish", label: "Swish-appen" },
-                  { key: "camera", label: "Mobilkamera" },
-                ] as { key: QrMode; label: string }[]
-              ).map((m) => (
-                <button
-                  key={m.key}
-                  type="button"
-                  onClick={() => setMode(m.key)}
-                  className={`rounded-xl border px-3 py-3 text-sm font-semibold transition ${
-                    mode === m.key
-                      ? "border-primary bg-primary text-black"
-                      : "border-primary bg-[#161616] text-neutral-200 hover:bg-[#1f1f1f]"
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-            <p className="mb-6 text-xs leading-snug text-neutral-500">
-              {mode === "swish"
-                ? "Skannas inifrån Swish-appen (”Skanna QR-kod”). Så fungerar officiella Swish-koder."
-                : "Öppnas med mobilens vanliga kamera, som föreslår att öppna Swish-appen."}
-            </p>
 
             {/* Dricks: gör beloppet redigerbart så kunden kan lägga till dricks */}
             <button
