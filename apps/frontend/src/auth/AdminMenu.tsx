@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ShieldCheck, LogOut, X } from "lucide-react";
+import { useEffect, useState, type ReactElement } from "react";
+import { ShieldCheck, LogOut, X, Home, QrCode } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 
 // A slide-out side menu shown only to a signed-in admin.
@@ -29,6 +29,21 @@ export function AdminMenu() {
     }
   };
 
+  const iconClassname = "w-8 h-8 p-1 bg-primary rounded-full";
+
+  const links = [
+    {
+      href: "/dashboard",
+      title: "Dashboard",
+      icon: <Home className={iconClassname} />,
+    },
+    {
+      href: "/p/s4q9jk8az",
+      title: "Qr Generator",
+      icon: <QrCode className={iconClassname} />,
+    },
+  ];
+
   return (
     <>
       {/* Floating toggle */}
@@ -54,11 +69,11 @@ export function AdminMenu() {
       <aside
         role="dialog"
         aria-label="Adminmeny"
-        className={`fixed top-0 right-0 z-50 h-full w-72 max-w-[85vw] bg-neutral-950 border-l border-neutral-800 shadow-2xl flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 z-50 h-full w-72 max-w-[85vw] bg-neutral-900 border-l border-neutral-800 shadow-2xl flex flex-col transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-600">
           <span className="flex items-center gap-2 text-primary font-semibold">
             <ShieldCheck className="w-5 h-5" />
             Admin
@@ -79,7 +94,16 @@ export function AdminMenu() {
           </p>
           <p className="mt-1 text-white break-words">{user.email}</p>
         </div>
-
+        <div className="w-full h-full border-t border-neutral-600 flex flex-col">
+          {links.map((link) => (
+            <MenuLink
+              href={link.href}
+              title={link.title}
+              key={link.title}
+              icon={link.icon}
+            />
+          ))}
+        </div>
         <div className="px-5 py-5 border-t border-neutral-800">
           <button
             type="button"
@@ -95,3 +119,23 @@ export function AdminMenu() {
     </>
   );
 }
+
+const MenuLink = ({
+  href,
+  title,
+  icon,
+}: {
+  href: string;
+  title: string;
+  icon: ReactElement;
+}) => {
+  return (
+    <a
+      href={href}
+      className="w-full h-fit px-5 py-5 bg-neutral-800 border-b border-neutral-600 flex gap-2 items-center justify-start hover:bg-primary"
+    >
+      {icon}
+      {title}
+    </a>
+  );
+};
