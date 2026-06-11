@@ -323,9 +323,6 @@ function swishQrData(
   swishNumber: string,
   allowTip: boolean,
 ) {
-  console.log(
-    `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${message.replaceAll(" ", "%20")}`,
-  );
   return `https://app.swish.nu/1/p/sw/?sw=${swishNumber}&amt=${amount}${allowTip ? "&edit=amt" : ""}&msg=${message.replaceAll(" ", "%20")}`;
 }
 
