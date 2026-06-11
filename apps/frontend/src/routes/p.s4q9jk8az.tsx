@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import QrGenerator from "../pages/QrGenerator";
+import QrGenerator from "../pages/qrGenerator";
 
 export const Route = createFileRoute("/p/s4q9jk8az")({
   head: () => ({

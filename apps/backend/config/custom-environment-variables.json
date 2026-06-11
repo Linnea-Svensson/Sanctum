@@ -1,0 +1,7 @@
+{
+  "host": "HOST",
+  "port": "PORT",
+  "authentication": {
+    "secret": "FEATHERS_AUTH_SECRET"
+  }
+}
