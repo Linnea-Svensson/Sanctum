@@ -1,8 +1,11 @@
 import ContainerCard from "../components/ContainerCard";
 import SectionHeader from "../components/SectionHeader";
 import { getIcon } from "../components/TrustIndicator";
+import { useOpeningHours } from "../api/useOpeningHours";
 
 const ContactSection = () => {
+  const { groups } = useOpeningHours();
+
   return (
     <section
       id="contact"
@@ -81,18 +84,15 @@ const ContactSection = () => {
                 </div>
                 <div className="flex flex-col justify-center gap-1 w-full max-w-xs">
                   <p className="font-bold mb-2">Öppettider</p>
-                  <div className="flex items-center justify-between w-full">
-                    <p>Måndag - Onsdag</p>
-                    <p>Stängt</p>
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <p>Torsdag - Fredag</p>
-                    <p>16:00 - 21:00</p>
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <p>Lördag - Söndag</p>
-                    <p>12:00 - 17:00</p>
-                  </div>
+                  {groups.map((group) => (
+                    <div
+                      key={group.label}
+                      className="flex items-center justify-between w-full"
+                    >
+                      <p>{group.label}</p>
+                      <p>{group.value}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

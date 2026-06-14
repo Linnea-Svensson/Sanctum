@@ -16,7 +16,7 @@ const RootLayout = () => (
     <main id="main-content">
       <Outlet />
     </main>
-    <AdminMenu />
+    {location.pathname !== "/dashboard" && <AdminMenu />}
     {/*  <TanStackRouterDevtools /> */}
   </>
 );

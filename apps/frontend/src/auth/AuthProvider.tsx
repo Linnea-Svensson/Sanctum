@@ -12,7 +12,7 @@ import {
   type AuthUser,
 } from "./api";
 
-const TOKEN_KEY = "sanctum_token";
+export const TOKEN_KEY = "sanctum_token";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 

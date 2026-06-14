@@ -1,6 +1,9 @@
 import { getIcon, type IconType } from "../components/TrustIndicator";
+import { useOpeningHours } from "../api/useOpeningHours";
 
 const FooterSection = () => {
+  const { groups } = useOpeningHours();
+
   return (
     <footer
       className="h-fit bg-linear-to-b from-[#141414] to-[#0a0a0a] flex flex-col items-start justify-center "
@@ -57,9 +60,11 @@ const FooterSection = () => {
         <div className="w-fit flex items-center justify-start flex-col gap-6">
           <h3>Öppettider</h3>
           <div className="flex flex-col items-start justify-center gap-4">
-            <p>Måndag - Onsdag: Stängt</p>
-            <p>Torsdag - Fredag: 16:00 - 21:00</p>
-            <p>Lördag -Söndag: 12:00 - 17:00</p>
+            {groups.map((group) => (
+              <p key={group.label}>
+                {group.label}: {group.value}
+              </p>
+            ))}
           </div>
         </div>
         <div className="w-fit flex items-center justify-center flex-col gap-6">

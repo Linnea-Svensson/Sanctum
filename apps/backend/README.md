@@ -1,4 +1,4 @@
-# @sanctum/api
+# @sanctum/backend
 
 FeathersJS v5 (Koa + Knex/SQLite) backend for Sanctum.
 
@@ -23,13 +23,13 @@ cp apps/backend/.env.example apps/backend/.env   # then edit the values
 
 ## Scripts
 
-Run from the repo root with `-w @sanctum/api`, or from `apps/backend/`.
+Run from the repo root with `-w @sanctum/backend`, or from `apps/backend/`.
 
 ```bash
-npm run dev -w @sanctum/api         # start the API with hot reload (tsx watch)
-npm run seed:admin -w @sanctum/api  # create/update the admin user from .env
-npm run build -w @sanctum/api       # typecheck + compile to lib/
-npm start -w @sanctum/api           # run the compiled build
+npm run dev -w @sanctum/backend         # start the API with hot reload (tsx watch)
+npm run seed:admin -w @sanctum/backend  # create/update the admin user from .env
+npm run build -w @sanctum/backend       # typecheck + compile to lib/
+npm start -w @sanctum/backend           # run the compiled build
 ```
 
 The SQLite database is created on first boot at `apps/backend/data/sanctum.sqlite`.
