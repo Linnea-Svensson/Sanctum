@@ -1,2 +1,16 @@
 node_modules
-/dist
+dist
+lib
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# SQLite data
+apps/backend/data
+*.sqlite
+*.sqlite3
+
+# TanStack Router generated cache
+.tanstack

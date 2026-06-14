@@ -1,0 +1,31 @@
+{
+  "name": "@sanctum/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node lib/index.js",
+    "seed:admin": "tsx scripts/seed-admin.ts"
+  },
+  "dependencies": {
+    "@feathersjs/authentication": "^5.0.30",
+    "@feathersjs/authentication-local": "^5.0.30",
+    "@feathersjs/configuration": "^5.0.30",
+    "@feathersjs/errors": "^5.0.30",
+    "@feathersjs/feathers": "^5.0.30",
+    "@feathersjs/knex": "^5.0.30",
+    "@feathersjs/koa": "^5.0.30",
+    "dotenv": "^16.4.7",
+    "knex": "^3.1.0",
+    "sqlite3": "^5.1.7",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "~5.9.3"
+  }
+}

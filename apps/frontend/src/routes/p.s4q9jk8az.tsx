@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import QrGenerator from "../pages/QrGenerator";
+import QrGenerator from "../pages/qrGenerator";
+import { RequireAdmin } from "../auth/RequireAdmin";
 
 export const Route = createFileRoute("/p/s4q9jk8az")({
   head: () => ({
@@ -9,5 +10,9 @@ export const Route = createFileRoute("/p/s4q9jk8az")({
 });
 
 function RouteComponent() {
-  return <QrGenerator />;
+  return (
+    <RequireAdmin>
+      <QrGenerator />
+    </RequireAdmin>
+  );
 }
