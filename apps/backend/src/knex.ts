@@ -27,6 +27,36 @@ const DEFAULT_OPENING_HOURS = [
   { day: 'sunday', label: 'Söndag', sortOrder: 7, closed: false, opens: '12:00', closes: '17:00' }
 ]
 
+// Default FAQ entries, seeded once when the table is first created.
+// These mirror the questions that were hard-coded on the start page so the
+// dashboard manages exactly what the site shows.
+const DEFAULT_FAQS = [
+  {
+    question: 'Var ligger er kiropraktormottagning i Täby?',
+    answer:
+      'Vår mottagning ligger på Kemistvägen 10, 183 79 Täby, med goda parkeringsmöjligheter och nära kommunikationer. Vi tar emot klienter från hela Täby med omnejd, inklusive Näsbypark, Roslags-Näsby, Viggbyholm och Arninge.',
+    sortOrder: 1
+  },
+  {
+    question: 'Behöver jag remiss för att besöka en kiropraktor i Täby?',
+    answer:
+      'Nej, du behöver ingen remiss. Du bokar enkelt din tid direkt via Bokadirekt och kommer till oss på Sanctum när det passar dig.',
+    sortOrder: 2
+  },
+  {
+    question: 'Vilka besvär behandlar ni?',
+    answer:
+      'Vi behandlar bland annat ryggsmärta, nacksmärta, huvudvärk, ischias, axel- och ledbesvär samt idrottsskador. Behandlingen anpassas alltid individuellt efter dina behov och mål.',
+    sortOrder: 3
+  },
+  {
+    question: 'Kan jag använda friskvårdsbidrag eller Epassi?',
+    answer:
+      'Ja, du kan använda ditt friskvårdsbidrag samt betala med Epassi för både kiropraktik och idrottsmassage hos oss i Täby.',
+    sortOrder: 4
+  }
+]
+
 // Ensure the tables this app needs exist. Idempotent — safe to call on every boot.
 export const ensureSchema = async (db: Knex): Promise<void> => {
   const hasUsers = await db.schema.hasTable('users')
@@ -52,5 +82,16 @@ export const ensureSchema = async (db: Knex): Promise<void> => {
       table.string('closes')
     })
     await db('opening_hours').insert(DEFAULT_OPENING_HOURS)
+  }
+
+  const hasFaqs = await db.schema.hasTable('faqs')
+  if (!hasFaqs) {
+    await db.schema.createTable('faqs', (table) => {
+      table.increments('id')
+      table.string('question').notNullable()
+      table.text('answer').notNullable()
+      table.integer('sortOrder').notNullable()
+    })
+    await db('faqs').insert(DEFAULT_FAQS)
   }
 }

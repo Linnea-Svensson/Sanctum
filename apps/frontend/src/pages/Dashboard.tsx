@@ -2,7 +2,7 @@ import { LogOut, Menu, ShieldCheck, X } from "lucide-react";
 import { useAuth } from "../auth/AuthProvider";
 import { links, MenuLink } from "../auth/AdminMenu";
 import { useState } from "react";
-import OpeningHoursEditor from "./OpeningHoursEditor";
+import DashboardHome from "./DashboardHome";
 
 const Dashboard = () => {
   const { status, isAdmin, user, signOut } = useAuth();
@@ -104,7 +104,7 @@ const Dashboard = () => {
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]">
-          <OpeningHoursEditor />
+          <DashboardHome />
         </div>
       </div>
     </div>
