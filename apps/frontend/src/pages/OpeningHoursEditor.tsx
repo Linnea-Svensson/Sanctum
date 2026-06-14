@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Clock, Save } from "lucide-react";
+import { Clock, Pencil, Save, X } from "lucide-react";
 import { TOKEN_KEY } from "../auth/AuthProvider";
 import TimePicker from "../components/TimePicker";
 import { openingHoursKey } from "../api/useOpeningHours";
 import {
   getOpeningHours,
+  groupOpeningHours,
   isClosed,
   updateOpeningHour,
   type OpeningHour,
@@ -38,7 +39,11 @@ function rowsEqual(a: Row, b: Row): boolean {
 const OpeningHoursEditor = () => {
   const queryClient = useQueryClient();
 
-  const { data, isPending, error: loadError } = useQuery({
+  const {
+    data,
+    isPending,
+    error: loadError,
+  } = useQuery({
     queryKey: openingHoursKey,
     queryFn: getOpeningHours,
   });
@@ -46,7 +51,11 @@ const OpeningHoursEditor = () => {
   // The fetched rows are the saved baseline; `rows` holds in-progress edits.
   const original = (data ?? []).map(toRow);
   const [rows, setRows] = useState<Row[]>([]);
+  const [editing, setEditing] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+
+  // Preview reflects the saved values (grouped like the public site).
+  const groups = data ? groupOpeningHours(data) : [];
 
   // Seed/refresh the editable copy whenever fresh data arrives from the cache.
   useEffect(() => {
@@ -66,29 +75,43 @@ const OpeningHoursEditor = () => {
             opens: row.closed ? null : row.opens || null,
             closes: row.closed ? null : row.closes || null,
           },
-          token
+          token,
         );
       }
     },
     onSuccess: () => {
       setSavedAt(new Date().toLocaleTimeString("sv-SE"));
-      // Refetch so the public site and this form reflect the saved values.
+      // Collapse back to the preview, which refreshes from the refetch below.
+      setEditing(false);
       queryClient.invalidateQueries({ queryKey: openingHoursKey });
     },
   });
 
   const updateRow = (id: number, changes: Partial<Row>) => {
     setRows((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, ...changes } : row))
+      prev.map((row) => (row.id === id ? { ...row, ...changes } : row)),
     );
     setSavedAt(null);
   };
 
-  const dirty = rows.some((row, i) => original[i] && !rowsEqual(row, original[i]));
+  const dirty = rows.some(
+    (row, i) => original[i] && !rowsEqual(row, original[i]),
+  );
+
+  const openEditor = () => {
+    setSavedAt(null);
+    setEditing(true);
+  };
+
+  const cancelEditor = () => {
+    if (data) setRows(data.map(toRow)); // discard unsaved edits
+    mutation.reset();
+    setEditing(false);
+  };
 
   const handleSave = () => {
     const changed = rows.filter(
-      (row, i) => original[i] && !rowsEqual(row, original[i])
+      (row, i) => original[i] && !rowsEqual(row, original[i]),
     );
     mutation.mutate(changed);
   };
@@ -99,80 +122,128 @@ const OpeningHoursEditor = () => {
     null;
 
   return (
-    <div className="h-full w-full overflow-y-auto bg-neutral-950 text-white p-6 md:p-10">
-      <div className="max-w-2xl mx-auto">
-        <header className="flex items-center gap-3 mb-2">
-          <Clock className="w-6 h-6 text-primary" />
+    <div className="min-h-full w-full bg-neutral-950 text-white py-4">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6">
+        <header className="mb-6 flex items-center gap-3">
+          <Clock className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-semibold">Öppettider</h1>
         </header>
-        <p className="text-neutral-400 mb-8">
-          Ändra tiderna nedan. Markera "Stängt" för dagar utan öppet. Tiderna
-          uppdateras på hemsidan när du sparar.
-        </p>
 
-        {isPending ? (
-          <p className="text-neutral-400">Laddar…</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {rows.map((row) => (
-              <div
-                key={row.id}
-                className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 px-4 py-4 sm:flex-row sm:items-center sm:gap-4"
-              >
-                <span className="text-lg font-medium sm:w-24 sm:text-base">
-                  {row.label}
-                </span>
-
-                <label className="flex w-fit cursor-pointer select-none items-center gap-2.5 py-1 text-sm text-neutral-300">
-                  <input
-                    type="checkbox"
-                    checked={row.closed}
-                    onChange={(e) =>
-                      updateRow(row.id, { closed: e.target.checked })
-                    }
-                    className="h-5 w-5 cursor-pointer rounded accent-primary"
-                  />
-                  Stängt
-                </label>
-
-                {row.closed ? (
-                  <span className="text-neutral-500 sm:ml-auto">Stängt</span>
-                ) : (
-                  <div className="flex w-full items-center gap-3 sm:ml-auto sm:w-auto">
-                    <TimePicker
-                      ariaLabel={`Öppnar ${row.label}`}
-                      value={row.opens}
-                      onChange={(v) => updateRow(row.id, { opens: v })}
-                    />
-                    <span className="text-neutral-500">–</span>
-                    <TimePicker
-                      ariaLabel={`Stänger ${row.label}`}
-                      value={row.closes}
-                      onChange={(v) => updateRow(row.id, { closes: v })}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+        {/* Preview — the saved hours, grouped like on the start page. */}
+        <section className="rounded-2xl border border-white/10 bg-black/40 p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-lg font-semibold">Nuvarande öppettider</h2>
+            <button
+              type="button"
+              onClick={editing ? cancelEditor : openEditor}
+              className="flex shrink-0 items-center gap-2 rounded-full border-2 border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+            >
+              {editing ? (
+                <>
+                  <X className="h-4 w-4" />
+                  Stäng
+                </>
+              ) : (
+                <>
+                  <Pencil className="h-4 w-4" />
+                  Ändra
+                </>
+              )}
+            </button>
           </div>
-        )}
 
-        {errorMessage && <p className="mt-4 text-red-400">{errorMessage}</p>}
-
-        <div className="flex items-center gap-4 mt-8">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={!dirty || mutation.isPending || isPending}
-            className="flex items-center gap-2 rounded-full bg-primary text-white px-6 py-2.5 font-medium hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <Save className="w-4 h-4" />
-            {mutation.isPending ? "Sparar…" : "Spara ändringar"}
-          </button>
-          {savedAt && !dirty && (
-            <span className="text-sm text-green-400">Sparat {savedAt}</span>
+          {isPending ? (
+            <p className="mt-4 text-neutral-400">Laddar…</p>
+          ) : (
+            <div className="mt-4 flex flex-col gap-2.5">
+              {groups.map((group) => (
+                <div
+                  key={group.label}
+                  className="flex items-center justify-between border-b border-white/5 pb-2.5 last:border-0 last:pb-0"
+                >
+                  <span className="text-neutral-300">{group.label}</span>
+                  <span className="font-medium">{group.value}</span>
+                </div>
+              ))}
+            </div>
           )}
-        </div>
+
+          {savedAt && !editing && (
+            <p className="mt-4 text-sm text-green-400">Sparat {savedAt}</p>
+          )}
+        </section>
+
+        {/* Editor — only visible after pressing "Ändra". */}
+        {editing && (
+          <section className="mt-4 rounded-2xl border border-white/10 bg-neutral-900/60 p-4 sm:p-6">
+            <div className="flex flex-col gap-3">
+              {rows.map((row) => (
+                <div
+                  key={row.id}
+                  className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 px-4 py-4 sm:flex-row sm:items-center sm:gap-4"
+                >
+                  <span className="text-lg font-medium sm:w-24 sm:text-base">
+                    {row.label}
+                  </span>
+
+                  <label className="flex w-fit cursor-pointer select-none items-center gap-2.5 py-1 text-sm text-neutral-300">
+                    <input
+                      type="checkbox"
+                      checked={row.closed}
+                      onChange={(e) =>
+                        updateRow(row.id, { closed: e.target.checked })
+                      }
+                      className="h-5 w-5 cursor-pointer rounded accent-primary"
+                    />
+                    Stängt
+                  </label>
+
+                  {row.closed ? (
+                    <span className="text-neutral-500 sm:ml-auto">Stängt</span>
+                  ) : (
+                    <div className="flex w-full items-center gap-3 sm:ml-auto sm:w-auto">
+                      <TimePicker
+                        ariaLabel={`Öppnar ${row.label}`}
+                        value={row.opens}
+                        onChange={(v) => updateRow(row.id, { opens: v })}
+                      />
+                      <span className="text-neutral-500">–</span>
+                      <TimePicker
+                        ariaLabel={`Stänger ${row.label}`}
+                        value={row.closes}
+                        onChange={(v) => updateRow(row.id, { closes: v })}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {errorMessage && (
+              <p className="mt-4 text-red-400">{errorMessage}</p>
+            )}
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={!dirty || mutation.isPending}
+                className="flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 font-medium text-white transition-colors hover:bg-primary/80 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Save className="h-4 w-4" />
+                {mutation.isPending ? "Sparar…" : "Spara ändringar"}
+              </button>
+              <button
+                type="button"
+                onClick={cancelEditor}
+                disabled={mutation.isPending}
+                className="rounded-full border border-white/20 px-6 py-2.5 font-medium text-neutral-300 transition-colors hover:bg-white/10 disabled:opacity-50"
+              >
+                Avbryt
+              </button>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
