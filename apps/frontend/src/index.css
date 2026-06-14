@@ -45,3 +45,13 @@ html {
 h3 {
   font-size: 30px;
 }
+
+/* Hide scrollbars on elements that scroll internally (e.g. the time picker
+   columns) so they read like an iOS-style wheel, without the global gold
+   scrollbar above. */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

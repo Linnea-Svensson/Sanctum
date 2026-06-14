@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Clock, Save } from "lucide-react";
 import { TOKEN_KEY } from "../auth/AuthProvider";
+import TimePicker from "../components/TimePicker";
 import { openingHoursKey } from "../api/useOpeningHours";
 import {
   getOpeningHours,
@@ -116,43 +117,41 @@ const OpeningHoursEditor = () => {
             {rows.map((row) => (
               <div
                 key={row.id}
-                className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3"
+                className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 px-4 py-4 sm:flex-row sm:items-center sm:gap-4"
               >
-                <span className="w-28 font-medium">{row.label}</span>
+                <span className="text-lg font-medium sm:w-24 sm:text-base">
+                  {row.label}
+                </span>
 
-                <label className="flex items-center gap-2 text-sm text-neutral-300 select-none">
+                <label className="flex w-fit cursor-pointer select-none items-center gap-2.5 py-1 text-sm text-neutral-300">
                   <input
                     type="checkbox"
                     checked={row.closed}
                     onChange={(e) =>
                       updateRow(row.id, { closed: e.target.checked })
                     }
-                    className="w-4 h-4 accent-primary"
+                    className="h-5 w-5 cursor-pointer rounded accent-primary"
                   />
                   Stängt
                 </label>
 
-                <div className="flex items-center gap-2 sm:ml-auto">
-                  <input
-                    type="time"
-                    aria-label={`Öppnar ${row.label}`}
-                    value={row.opens}
-                    disabled={row.closed}
-                    onChange={(e) => updateRow(row.id, { opens: e.target.value })}
-                    className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
-                  />
-                  <span className="text-neutral-500">–</span>
-                  <input
-                    type="time"
-                    aria-label={`Stänger ${row.label}`}
-                    value={row.closes}
-                    disabled={row.closed}
-                    onChange={(e) =>
-                      updateRow(row.id, { closes: e.target.value })
-                    }
-                    className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
-                  />
-                </div>
+                {row.closed ? (
+                  <span className="text-neutral-500 sm:ml-auto">Stängt</span>
+                ) : (
+                  <div className="flex w-full items-center gap-3 sm:ml-auto sm:w-auto">
+                    <TimePicker
+                      ariaLabel={`Öppnar ${row.label}`}
+                      value={row.opens}
+                      onChange={(v) => updateRow(row.id, { opens: v })}
+                    />
+                    <span className="text-neutral-500">–</span>
+                    <TimePicker
+                      ariaLabel={`Stänger ${row.label}`}
+                      value={row.closes}
+                      onChange={(v) => updateRow(row.id, { closes: v })}
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>
