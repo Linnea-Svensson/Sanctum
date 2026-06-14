@@ -7,8 +7,8 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspaces --if-present",
-    "dev:web": "npm run dev --workspace @sanctum/web",
-    "dev:api": "npm run dev --workspace @sanctum/api",
+    "dev:frontend": "npm run dev --workspace @sanctum/frontend",
+    "dev:backend": "npm run dev --workspace @sanctum/backend",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"
   }
