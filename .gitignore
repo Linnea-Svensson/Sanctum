@@ -8,7 +8,7 @@ lib
 !.env.example
 
 # SQLite data
-apps/api/data
+apps/backend/data
 *.sqlite
 *.sqlite3
 

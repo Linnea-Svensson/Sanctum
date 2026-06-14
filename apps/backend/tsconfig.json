@@ -6,7 +6,7 @@
     "lib": ["ES2022"],
     "types": ["node"],
     "outDir": "lib",
-    "rootDir": ".",
+    "rootDir": "src",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
@@ -15,6 +15,6 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "lib"]
 }

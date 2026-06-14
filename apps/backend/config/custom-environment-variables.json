@@ -3,5 +3,10 @@
   "port": "PORT",
   "authentication": {
     "secret": "FEATHERS_AUTH_SECRET"
+  },
+  "sqlite": {
+    "connection": {
+      "filename": "DATABASE_FILE"
+    }
   }
 }

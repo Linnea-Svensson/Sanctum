@@ -1,7 +1,11 @@
 {
   "host": "localhost",
   "port": 3030,
-  "origins": ["http://localhost:5173"],
+  "origins": [
+    "http://localhost:5173",
+    "https://www.sanctumkiropraktik.se",
+    "https://sanctumkiropraktik.se"
+  ],
   "paginate": {
     "default": 10,
     "max": 50

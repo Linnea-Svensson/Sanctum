@@ -20,7 +20,18 @@ const app: Application = koa(feathers())
 app.configure(configuration())
 
 // Global middleware.
-app.use(cors())
+// Lock CORS to the origins listed in config (`origins`). If none are configured
+// we fall back to reflecting the request origin (handy in local dev).
+const allowedOrigins = (app.get('origins') as string[] | undefined) ?? []
+app.use(
+  cors({
+    origin(ctx) {
+      const requestOrigin = ctx.get('Origin')
+      if (allowedOrigins.length === 0) return requestOrigin || '*'
+      return allowedOrigins.includes(requestOrigin) ? requestOrigin : ''
+    }
+  })
+)
 app.use(errorHandler())
 app.use(parseAuthentication())
 app.use(bodyParser())
