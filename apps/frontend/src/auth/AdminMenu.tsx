@@ -1,9 +1,24 @@
-import { useEffect, useState, type ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { ShieldCheck, LogOut, X, Home, QrCode } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 
 // A slide-out side menu shown only to a signed-in admin.
 // Displays the current account and a sign-out action.
+const iconClassname = "w-8 h-8 p-1 bg-primary rounded-full";
+
+export const links = [
+  {
+    href: "/dashboard",
+    title: "Dashboard",
+    icon: <Home className={iconClassname} />,
+  },
+  {
+    href: "/p/s4q9jk8az",
+    title: "Qr Generator",
+    icon: <QrCode className={iconClassname} />,
+  },
+];
+
 export function AdminMenu() {
   const { status, isAdmin, user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
@@ -11,9 +26,6 @@ export function AdminMenu() {
 
   // Hooks must run on every render (before any early return), or React throws
   // "Rendered more hooks than during the previous render".
-  useEffect(() => {
-    setOpen(location.pathname === "/dashboard");
-  }, [location.pathname]);
 
   if (status !== "authenticated" || !isAdmin || !user) {
     return null;
@@ -28,21 +40,6 @@ export function AdminMenu() {
       setSigningOut(false);
     }
   };
-
-  const iconClassname = "w-8 h-8 p-1 bg-primary rounded-full";
-
-  const links = [
-    {
-      href: "/dashboard",
-      title: "Dashboard",
-      icon: <Home className={iconClassname} />,
-    },
-    {
-      href: "/p/s4q9jk8az",
-      title: "Qr Generator",
-      icon: <QrCode className={iconClassname} />,
-    },
-  ];
 
   return (
     <>
@@ -120,7 +117,7 @@ export function AdminMenu() {
   );
 }
 
-const MenuLink = ({
+export const MenuLink = ({
   href,
   title,
   icon,

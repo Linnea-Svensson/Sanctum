@@ -1,7 +1,7 @@
 // Thin client for the Feathers authentication service (REST + JWT).
 // No Feathers client dependency — just fetch against the configured API URL.
 
-const API_URL = (
+export const API_URL = (
   (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3030"
 ).replace(/\/$/, "");
 
